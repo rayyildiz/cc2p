@@ -1,6 +1,9 @@
 # CSV To Parquet Converter (CC2P)
 
-**(CC2P)** is a project that focuses on converting CSV files into Parquet format.
+[![Build](https://github.com/rayyildiz/cc2p/actions/workflows/build.yaml/badge.svg)](https://github.com/rayyildiz/cc2p/actions/workflows/build.yaml)
+
+**(CC2P)** is a Rust-based project that converts CSV files in a selected folder into parquet format. This tool provides a simple and efficient way of handling and converting your CSV data files.
+
 
 ## Installation & Usage
 
@@ -15,6 +18,10 @@ Provide instructions on how to build the project for example installing the Rust
 ### Running
 
 Provide Instructions on how to run the scripts. For example, how to specify the input CSV file and the output Parquet file.
+
+```shell
+cc2p --path /path/to/csv/files  --worker 8
+```
 
 ## Features
 
@@ -32,5 +39,4 @@ This project is licensed under MIT, see the [LICENSE](LICENSE) file for details.
 
 ## Contact
 
-Your Name - Your Email
 Project Link: https://github.com/rayyildiz/cc2p
