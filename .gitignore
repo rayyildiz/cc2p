@@ -1,0 +1,9 @@
+.idea/
+.idea
+.idea/*
+.idea/httpRequests/*
+*.iml
+tmp/
+.env
+target/
+.DS_Store

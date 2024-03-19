@@ -1,0 +1,22 @@
+[package]
+name = "cc2p"
+version = "0.1.0"
+edition = "2021"
+description = "Convert a CSV to parquet file format"
+authors = ["rayyildiz"]
+license-file = "LICENSE"
+
+[dependencies]
+polars = { version = "0.38", features = ["polars-io", "parquet"] }
+polars-parquet = { version = "0.38" }
+clap = { version = "4.5", features = ["derive"] }
+indicatif = { version = "0.17" }
+rayon = { version = "1.9" }
+
+[profile.release]
+codegen-units = 1
+lto = true
+panic = "abort"
+debug = false
+strip = "debuginfo"
+opt-level = 3
