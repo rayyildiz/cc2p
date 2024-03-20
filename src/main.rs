@@ -74,6 +74,33 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+/// Processes a CSV file and converts it into a Parquet file.
+///
+/// # Arguments
+///
+/// * `base` - The base directory where the file is located.
+/// * `file_name` - The name of the CSV file to be processed.
+///
+/// # Errors
+///
+/// Returns an `Err` if any of the following errors occur:
+///
+/// * The file specified by the `file_path` does not exist or cannot be opened.
+/// * There is an error while reading the CSV file.
+/// * There is an error while creating or writing to the Parquet file.
+///
+/// # Examples
+///
+/// ```rust
+/// use std::path::PathBuf;
+///
+/// let base = PathBuf::from("path/to/base/directory");
+/// let file_name = "input.csv";
+///
+/// let result = process_file(&base, file_name);
+/// assert!(result.is_ok());
+/// ```
+///
 fn process_file(base: &PathBuf, file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let file_path = base.join(file_name);
 
@@ -90,4 +117,30 @@ fn process_file(base: &PathBuf, file_name: &str) -> Result<(), Box<dyn std::erro
         .unwrap();
 
     Ok(())
+}
+
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn test_process_file() {
+        let mut base = std::env::current_dir().unwrap();
+        base.push("testdata");
+
+        let file_name = "sample.csv";
+
+        let result = process_file(&base, file_name);
+
+        // Check that the function completed successfully
+        assert!(result.is_ok());
+
+        // Verify the parquet file was created
+        let parquet_file = base.join("sample.parquet");
+        assert!(parquet_file.exists());
+
+        // Optionally, clean up the parquet file
+        std::fs::remove_file(parquet_file).unwrap();
+    }
 }
