@@ -15,6 +15,12 @@
 
 Provide instructions on how to build the project for example installing the Rust compiler and necessary crates.
 
+Here is how to install the `cc2p` directly from the Git repository:
+
+```shell
+cargo install --git https://github.com/rayyildiz/cc2p.git
+```
+
 ### Running
 
 Provide Instructions on how to run the scripts. For example, how to specify the input CSV file and the output Parquet file.
