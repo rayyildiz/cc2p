@@ -1,4 +1,4 @@
-# CSV To Parquet Converter (CC2P)
+# Convert CSV To Parquet (CC2P)
 
 [![Build](https://github.com/rayyildiz/cc2p/actions/workflows/build.yaml/badge.svg)](https://github.com/rayyildiz/cc2p/actions/workflows/build.yaml)
 
