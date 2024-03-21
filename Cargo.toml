@@ -1,6 +1,6 @@
 [package]
 name = "cc2p"
-version = "0.1.2"
+version = "0.1.3"
 edition = "2021"
 description = "Convert a CSV to parquet file format"
 authors = ["rayyildiz"]
@@ -9,11 +9,11 @@ homepage = "https://github.com/rayyildiz/cc2p"
 readme = "README.md"
 
 [dependencies]
-polars = { version = "0.38", features = ["polars-io", "parquet"] }
-polars-parquet = { version = "0.38" }
-clap = { version = "4.5", features = ["derive"] }
-indicatif = { version = "0.17" }
-rayon = { version = "1.9" }
+polars = { version = "0.38", default-features = false, features = ["csv"] }
+polars-io = { version = "0.38", default-features = false, features = ["csv","parquet"] }
+clap = { version = "4.5", default-features = false, features = ["derive","std"] }
+indicatif = { version = "0.17", default-features = false }
+rayon = { version = "1.9", default-features = false }
 
 [profile.release]
 codegen-units = 1
