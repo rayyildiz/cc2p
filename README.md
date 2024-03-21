@@ -18,7 +18,7 @@ Provide instructions on how to build the project for example installing the Rust
 Here is how to install the `cc2p` directly from the Git repository:
 
 ```shell
-cargo install --git https://github.com/rayyildiz/cc2p.git
+cargo install cc2p
 ```
 
 ### Running
