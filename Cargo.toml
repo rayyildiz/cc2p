@@ -5,6 +5,8 @@ edition = "2021"
 description = "Convert a CSV to parquet file format"
 authors = ["rayyildiz"]
 license-file = "LICENSE"
+homepage = "https://github.com/rayyildiz/cc2p"
+readme = "README.md"
 
 [dependencies]
 polars = { version = "0.38", features = ["polars-io", "parquet"] }
