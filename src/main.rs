@@ -15,6 +15,14 @@ struct Args {
     #[arg(short, long, default_value_t = String::from("."))]
     path: String,
 
+    /// Represents the delimiter used in CSV files.
+    #[arg(short, long, default_value_t = String::from(","))]
+    delimiter: String,
+
+    /// Represents whether to include the header in the CSV search column.
+    #[arg(long, default_value_t = true)]
+    header: bool,
+
     /// Number of worker threads to use for performing the task.
     #[arg(short, long, default_value_t = 4)]
     worker: u8,
@@ -31,7 +39,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let start = Instant::now();
     let path = PathBuf::from(args.path);
-    println!("reading  path: {}, worker count: {}", path.display(), args.worker);
+    let delimiter = args.delimiter.as_str().chars().next().unwrap_or(',');
+    let has_header = args.header;
+
+    println!("Program arguments\n path: {}, \n delimiter: {},\n has header:{} \n worker count: {}", path.display(), delimiter, has_header, args.worker);
     let errors = Arc::new(Mutex::new(Vec::<ErrorData>::new()));
 
     let d = std::fs::read_dir(&path)?;
@@ -53,18 +64,18 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         bar.inc(1);
         let errors_clone = Arc::clone(&errors);
         pool.install(move || {
-            let r = process_file(&path_clone, file.to_str().unwrap());
+            let r = process_file(&path_clone, delimiter, has_header, file.to_str().unwrap());
             if let Err(err) = r {
                 let mut errors = errors_clone.lock().unwrap();
 
-                errors.push(ErrorData { file_path: file.to_str().unwrap().to_string(), error:err.to_string() });
+                errors.push(ErrorData { file_path: file.to_str().unwrap().to_string(), error: err.to_string() });
             }
         });
     }
 
     bar.finish();
     let errors = errors.lock().unwrap();
-    for err_data in &*errors{
+    for err_data in &*errors {
         println!("File: {}  Error: {:?}", err_data.file_path, err_data.error);
     }
 
@@ -74,39 +85,42 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
-/// Processes a CSV file and converts it into a Parquet file.
+/// Process a CSV file and convert it to a Parquet file.
 ///
 /// # Arguments
 ///
-/// * `base` - The base directory where the file is located.
-/// * `file_name` - The name of the CSV file to be processed.
+/// * `base` - The base directory where the file resides.
+/// * `delimiter` - The delimiter character used in the CSV file.
+/// * `has_header` - Whether the CSV file has a header row or not.
+/// * `file_name` - The name of the CSV file to process.
 ///
 /// # Errors
 ///
-/// Returns an `Err` if any of the following errors occur:
+/// This function returns an `Err` value if it encounters any errors during processing.
+/// The error type is a boxed trait object that implements the `std::error::Error` trait.
 ///
-/// * The file specified by the `file_path` does not exist or cannot be opened.
-/// * There is an error while reading the CSV file.
-/// * There is an error while creating or writing to the Parquet file.
-///
-/// # Examples
+/// # Example
 ///
 /// ```rust
 /// use std::path::PathBuf;
 ///
-/// let base = PathBuf::from("path/to/base/directory");
-/// let file_name = "input.csv";
+/// fn main() -> Result<(), Box<dyn std::error::Error>> {
+///     let base = PathBuf::from("/path/to/files");
+///     let delimiter = ',';
+///     let has_header = true;
+///     let file_name = "data.csv";
 ///
-/// let result = process_file(&base, file_name);
-/// assert!(result.is_ok());
+///     process_file(&base, delimiter, has_header, file_name)?;
+///
+///     Ok(())
+/// }
 /// ```
-///
-fn process_file(base: &PathBuf, file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
+fn process_file(base: &PathBuf, delimiter: char, has_header: bool, file_name: &str) -> Result<(), Box<dyn std::error::Error>> {
     let file_path = base.join(file_name);
 
     let file = File::open(&file_path)?;
 
-    let mut df_posts = CsvReader::new(file).has_header(true).finish()?;
+    let mut df_posts = CsvReader::new(file).has_header(has_header).with_separator(delimiter as u8).finish()?;
 
     let target_file = file_path.with_extension("parquet");
     let mut file = File::create(target_file).unwrap();
@@ -131,7 +145,7 @@ mod tests {
 
         let file_name = "sample.csv";
 
-        let result = process_file(&base, file_name);
+        let result = process_file(&base, ',', true, file_name);
 
         // Check that the function completed successfully
         assert!(result.is_ok());
