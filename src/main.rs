@@ -7,6 +7,8 @@ use indicatif::{ProgressBar, ProgressStyle};
 use polars::prelude::*;
 use std::path::PathBuf;
 use std::sync::Mutex;
+use tokio::runtime;
+
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -55,25 +57,45 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     }
     let bar = ProgressBar::new(files.len().try_into().unwrap());
+
     bar.set_style(ProgressStyle::with_template("[{elapsed_precise}] {bar:40.yellow/blue} {pos:>7}/{len:7} {msg}")
         .unwrap());
-    let pool = rayon::ThreadPoolBuilder::default().num_threads(args.worker as usize).build().unwrap();
+    let bar = Arc::new(Mutex::new(bar));
 
-    for file in files {
-        let path_clone = path.clone();
-        bar.inc(1);
-        let errors_clone = Arc::clone(&errors);
-        pool.install(move || {
-            let r = process_file(&path_clone, delimiter, has_header, file.to_str().unwrap());
-            if let Err(err) = r {
-                let mut errors = errors_clone.lock().unwrap();
+    let runtime = runtime::Builder::new_multi_thread()
+        .worker_threads(args.worker as usize)
+        .enable_all()
+        .build()?;
 
-                errors.push(ErrorData { file_path: file.to_str().unwrap().to_string(), error: err.to_string() });
-            }
-        });
-    }
 
-    bar.finish();
+    runtime.block_on(async {
+        let mut handles = vec![];
+
+        for file in files {
+            let path_clone = path.clone();
+            let bar = Arc::clone(&bar);
+            let errors_clone = Arc::clone(&errors);
+            let h = tokio::spawn(async move {
+
+                if let Err(err) = process_file(&path_clone, delimiter, has_header, file.to_str().unwrap()) {
+                    let mut errors = errors_clone.lock().unwrap();
+
+                    errors.push(ErrorData { file_path: file.to_str().unwrap().to_string(), error: err.to_string() });
+                }
+                bar.lock().unwrap().inc(1);
+            });
+
+            handles.push(h);
+        }
+
+        for handle in handles {
+            let _ = handle.await;
+        }
+    });
+
+
+    bar.lock().unwrap().finish();
+
     let errors = errors.lock().unwrap();
     for err_data in &*errors {
         println!("File: {}  Error: {:?}", err_data.file_path, err_data.error);
