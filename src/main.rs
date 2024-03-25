@@ -44,7 +44,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let delimiter = args.delimiter.as_str().chars().next().unwrap_or(',');
     let has_header = args.header;
 
-    println!("Program arguments\n path: {}\n delimiter: {}\n has header:{} \n worker count: {}", path.display(), delimiter, has_header, args.worker);
+    println!("Program arguments\n path: {}\n delimiter: {}\n has header: {} \n worker count: {}", path.display(), delimiter, has_header, args.worker);
     let errors = Arc::new(Mutex::new(Vec::<ErrorData>::new()));
 
     let d = std::fs::read_dir(&path)?;
@@ -98,7 +98,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let errors = errors.lock().unwrap();
     for err_data in &*errors {
-        println!("File: {}  Error: {:?}", err_data.file_path, err_data.error);
+        println!("File: {}  Error: {:?}\n", err_data.file_path, err_data.error);
     }
 
     let elapsed = start.elapsed();
