@@ -40,8 +40,8 @@ Other arguments:
 ## Features
 
 - Fast and reliable CSV to Parquet conversion.
-- Multithreaded processing with the help of the Rayon crate.
-- Progress indication during conversion with the help of the Indicatif crate.
+- Multithreaded processing with the help of the [tokio](https://tokio.rs/) crate.
+- Progress indication during conversion with the help of the [indicatif](https://docs.rs/indicatif) crate.
 
 ## Contributing
 
