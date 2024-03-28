@@ -1,5 +1,6 @@
 extern crate core;
 
+use std::ffi::OsString;
 use clap::{arg, Parser};
 use indicatif::{ProgressBar, ProgressStyle};
 use polars::prelude::*;
@@ -8,21 +9,18 @@ use std::path::PathBuf;
 use std::sync::Mutex;
 use std::time::Instant;
 use tokio::runtime;
+use glob::glob;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
     /// Represents the folder path for CSV search.
-    #[arg(short, long, default_value_t = String::from("."))]
+    #[arg(short, long, default_value_t = String::from("*.csv"))]
     path: String,
 
     /// Represents the delimiter used in CSV files.
     #[arg(short, long, default_value_t = String::from(","))]
     delimiter: String,
-
-    /// Represents whether to include the header in the CSV search column.
-    #[arg(long, default_value_t = true)]
-    header: bool,
 
     /// Number of worker threads to use for performing the task.
     #[arg(short, long, default_value_t = 4)]
@@ -35,38 +33,47 @@ struct ErrorData {
     error: String,
 }
 
+struct FileInfo {
+    dir: PathBuf,
+    file_name: OsString,
+}
+
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let start = Instant::now();
-    let path = PathBuf::from(args.path);
+    let path = args.path;
     let delimiter = args.delimiter.as_str().chars().next().unwrap_or(',');
-    let has_header = args.header;
 
     println!(
-        "Program arguments\n path: {}\n delimiter: {}\n has header: {} \n worker count: {}",
-        path.display(),
+        "Program arguments\n path: {}\n delimiter: {}\n worker count: {}",
+        path,
         delimiter,
-        has_header,
         args.worker
     );
     let errors = Arc::new(Mutex::new(Vec::<ErrorData>::new()));
 
-    let d = std::fs::read_dir(&path)?;
     let mut files = vec![];
-    for path_result in d {
-        let path = path_result?.path();
-
-        if path.extension() == Some(std::ffi::OsStr::new("csv")) {
-            files.push(path.file_name().unwrap().to_owned());
+    for entry in glob(path.as_str())? {
+        match entry {
+            Ok(path) => {
+                if path.extension() == Some(std::ffi::OsStr::new("csv")) {
+                    files.push(FileInfo {
+                        dir: path.parent().unwrap().to_path_buf(),
+                        file_name: path.file_name().unwrap().to_owned(),
+                    });
+                }
+            }
+            Err(e) => eprintln!("error file getting path, {:?}", e),
         }
     }
+
     let bar = ProgressBar::new(files.len().try_into().unwrap());
 
     bar.set_style(
         ProgressStyle::with_template(
             "[{elapsed_precise}] {bar:40.yellow/blue} {pos:>7}/{len:7} {msg}",
         )
-        .unwrap(),
+            .unwrap(),
     );
     let bar = Arc::new(Mutex::new(bar));
 
@@ -79,17 +86,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut handles = vec![];
 
         for file in files {
-            let path_clone = path.clone();
+            let path_clone = file.dir.clone();
             let bar = Arc::clone(&bar);
             let errors_clone = Arc::clone(&errors);
             let h = tokio::spawn(async move {
                 if let Err(err) =
-                    convert_to_parquet(&path_clone, delimiter, has_header, file.to_str().unwrap())
+                    convert_to_parquet(path_clone, delimiter, file.file_name.to_str().unwrap())
                 {
                     let mut errors = errors_clone.lock().unwrap();
 
                     errors.push(ErrorData {
-                        file_path: file.to_str().unwrap().to_string(),
+                        file_path: file.file_name.to_str().unwrap().to_string(),
                         error: err.to_string(),
                     });
                 }
@@ -151,9 +158,8 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// }
 /// ```
 pub fn convert_to_parquet(
-    base: &PathBuf,
+    base: PathBuf,
     delimiter: char,
-    has_header: bool,
     file_name: &str,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let file_path = base.join(file_name);
@@ -161,7 +167,7 @@ pub fn convert_to_parquet(
     let file = File::open(&file_path)?;
 
     let mut df_posts = CsvReader::new(file)
-        .has_header(has_header)
+        .has_header(true)
         .with_separator(delimiter as u8)
         .finish()?;
 
@@ -187,7 +193,7 @@ mod tests {
 
         let file_name = "sample.csv";
 
-        let result = convert_to_parquet(&base, ',', true, file_name);
+        let result = convert_to_parquet(base.clone(), ',',  file_name);
 
         // Check that the function completed successfully
         assert!(result.is_ok());
