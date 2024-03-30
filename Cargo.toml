@@ -5,7 +5,7 @@ edition = "2021"
 description = "Convert a CSV to parquet file format"
 authors = ["rayyildiz"]
 license-file = "LICENSE"
-homepage = "https://github.com/rayyildiz/cc2p"
+repository = "https://github.com/rayyildiz/cc2p"
 readme = "README.md"
 
 [dependencies]
