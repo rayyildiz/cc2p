@@ -2,12 +2,15 @@ extern crate core;
 
 use clap::{arg, Parser};
 use indicatif::{ProgressBar, ProgressStyle};
-use polars::prelude::*;
 use std::fs::File;
-use std::path::PathBuf;
-use std::sync::Mutex;
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, Mutex};
 use std::time::Instant;
+use parquet::basic::Compression;
+use parquet::file::properties::WriterProperties;
 use tokio::runtime;
+
+const READ_MAX_RECORDS: usize = 10;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -66,7 +69,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ProgressStyle::with_template(
             "[{elapsed_precise}] {bar:40.yellow/blue} {pos:>7}/{len:7} {msg}",
         )
-        .unwrap(),
+            .unwrap(),
     );
     let bar = Arc::new(Mutex::new(bar));
 
@@ -151,7 +154,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 /// }
 /// ```
 pub fn convert_to_parquet(
-    base: &PathBuf,
+    base: &Path,
     delimiter: char,
     has_header: bool,
     file_name: &str,
@@ -160,18 +163,48 @@ pub fn convert_to_parquet(
 
     let file = File::open(&file_path)?;
 
-    let mut df_posts = CsvReader::new(file)
-        .has_header(has_header)
-        .with_separator(delimiter as u8)
-        .finish()?;
+    let schema = arrow_csv::infer_schema_from_files(&[file_path.to_str().unwrap().to_string()],
+                                                    delimiter as u8,
+                                                    Some(READ_MAX_RECORDS),
+                                                    has_header)?;
+    let schema_ref = Arc::new(schema);
+    let mut csv = arrow_csv::ReaderBuilder::new(schema_ref.clone())
+        .with_delimiter(delimiter as u8)
+        .with_header(has_header)
+        .build(file)?;
 
     let target_file = file_path.with_extension("parquet");
     let mut file = File::create(target_file).unwrap();
+    let props = WriterProperties::builder()
+        .set_compression(Compression::SNAPPY)
+        .build();
 
-    ParquetWriter::new(&mut file)
-        .with_compression(ParquetCompression::Zstd(None))
-        .finish(&mut df_posts)
-        .unwrap();
+    let mut parquet_writer = parquet::arrow::ArrowWriter::try_new(&mut file, schema_ref, Some(props))?;
+
+
+    for batch in csv.by_ref() {
+        match batch {
+            Ok(batch) => parquet_writer.write(&batch)?,
+            Err(error) => eprintln!("error : {:?}", error)
+        }
+    }
+
+    parquet_writer.close()?;
+
+
+    // let mut df_posts = CsvReader::new(file)
+    //     .has_header(has_header)
+    //     .with_separator(delimiter as u8)
+    //     .finish()?;
+
+
+    // arrow_csv::(file)
+
+
+    // ParquetWriter::new(&mut file)
+    //     .with_compression(ParquetCompression::Zstd(None))
+    //     .finish(&mut df_posts)
+    //     .unwrap();
 
     Ok(())
 }
