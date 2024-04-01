@@ -9,3 +9,4 @@ target/
 .DS_Store
 Cargo.lock
 testdata/sample.parquet
+testdata/sample2.parquet

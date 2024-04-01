@@ -1,16 +1,14 @@
 extern crate core;
 
-use clap::{arg, Parser};
-use indicatif::{ProgressBar, ProgressStyle};
-use std::fs::File;
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
-use parquet::basic::Compression;
-use parquet::file::properties::WriterProperties;
+
+use clap::{arg, Parser};
+use indicatif::{ProgressBar, ProgressStyle};
 use tokio::runtime;
 
-const READ_MAX_RECORDS: usize = 10;
+use cc2p::convert_to_parquet;
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
@@ -24,8 +22,8 @@ struct Args {
     delimiter: String,
 
     /// Represents whether to include the header in the CSV search column.
-    #[arg(long, default_value_t = true)]
-    header: bool,
+    #[arg(long, default_value_t = false)]
+    no_header: bool,
 
     /// Number of worker threads to use for performing the task.
     #[arg(short, long, default_value_t = 4)]
@@ -43,7 +41,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let start = Instant::now();
     let path = PathBuf::from(args.path);
     let delimiter = args.delimiter.as_str().chars().next().unwrap_or(',');
-    let has_header = args.header;
+    let has_header = !args.no_header;
 
     println!(
         "Program arguments\n path: {}\n delimiter: {}\n has header: {} \n worker count: {}",
@@ -121,115 +119,4 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     println!("elapsed time {} ms", elapsed.as_millis());
 
     Ok(())
-}
-
-/// Process a CSV file and convert it to a Parquet file.
-///
-/// # Arguments
-///
-/// * `base` - The base directory where the file resides.
-/// * `delimiter` - The delimiter character used in the CSV file.
-/// * `has_header` - Whether the CSV file has a header row or not.
-/// * `file_name` - The name of the CSV file to process.
-///
-/// # Errors
-///
-/// This function returns an `Err` value if it encounters any errors during processing.
-/// The error type is a boxed trait object that implements the `std::error::Error` trait.
-///
-/// # Example
-///
-/// ```rust
-/// use std::path::PathBuf;
-///
-/// fn main() -> Result<(), Box<dyn std::error::Error>> {
-///     let base = PathBuf::from("/path/to/files");
-///     let delimiter = ',';
-///     let has_header = true;
-///     let file_name = "data.csv";
-///
-///     convert_to_parquet(&base, delimiter, has_header, file_name)?;
-///
-///     Ok(())
-/// }
-/// ```
-pub fn convert_to_parquet(
-    base: &Path,
-    delimiter: char,
-    has_header: bool,
-    file_name: &str,
-) -> Result<(), Box<dyn std::error::Error>> {
-    let file_path = base.join(file_name);
-
-    let file = File::open(&file_path)?;
-
-    let schema = arrow_csv::infer_schema_from_files(&[file_path.to_str().unwrap().to_string()],
-                                                    delimiter as u8,
-                                                    Some(READ_MAX_RECORDS),
-                                                    has_header)?;
-    let schema_ref = Arc::new(schema);
-    let mut csv = arrow_csv::ReaderBuilder::new(schema_ref.clone())
-        .with_delimiter(delimiter as u8)
-        .with_header(has_header)
-        .build(file)?;
-
-    let target_file = file_path.with_extension("parquet");
-    let mut file = File::create(target_file).unwrap();
-    let props = WriterProperties::builder()
-        .set_compression(Compression::SNAPPY)
-        .build();
-
-    let mut parquet_writer = parquet::arrow::ArrowWriter::try_new(&mut file, schema_ref, Some(props))?;
-
-
-    for batch in csv.by_ref() {
-        match batch {
-            Ok(batch) => parquet_writer.write(&batch)?,
-            Err(error) => eprintln!("error : {:?}", error)
-        }
-    }
-
-    parquet_writer.close()?;
-
-
-    // let mut df_posts = CsvReader::new(file)
-    //     .has_header(has_header)
-    //     .with_separator(delimiter as u8)
-    //     .finish()?;
-
-
-    // arrow_csv::(file)
-
-
-    // ParquetWriter::new(&mut file)
-    //     .with_compression(ParquetCompression::Zstd(None))
-    //     .finish(&mut df_posts)
-    //     .unwrap();
-
-    Ok(())
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[test]
-    fn test_convert_to_parquet() {
-        let mut base = std::env::current_dir().unwrap();
-        base.push("testdata");
-
-        let file_name = "sample.csv";
-
-        let result = convert_to_parquet(&base, ',', true, file_name);
-
-        // Check that the function completed successfully
-        assert!(result.is_ok());
-
-        // Verify the parquet file was created
-        let parquet_file = base.join("sample.parquet");
-        assert!(parquet_file.exists());
-
-        // Optionally, clean up the parquet file
-        std::fs::remove_file(parquet_file).unwrap();
-    }
 }
