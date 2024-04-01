@@ -56,7 +56,7 @@ pub fn convert_to_parquet(
         .with_delimiter(delimiter as u8)
         .infer_schema(file, Some(READ_MAX_RECORDS))?;
 
-    let schema_ref = remove_deduplicate_columns(csv_schema);// Arc::new(csv_schema);
+    let schema_ref = remove_deduplicate_columns(csv_schema);
 
     let file = File::open(&file_path)?;
 
@@ -108,7 +108,17 @@ fn delete_if_exist(filename: &str) -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+struct Empty {}
 
+/// Removes duplicate columns from a given Arrow schema, and returns a new schema with deduplicated columns.
+///
+/// # Arguments
+///
+/// * `sc` - The input Arrow schema.
+///
+/// # Returns
+///
+/// Returns an `Arc` containing the deduplicated schema.
 fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema::Schema> {
     let mut index = 1;
     let mut deduplicated_fields = Vec::new();
@@ -123,10 +133,10 @@ fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema::Sch
             let new_field = <arrow_schema::Field as Clone>::clone(&(*field).clone()).with_name(name);
             deduplicated_fields.push(Arc::new(new_field));
         } else {
-            names.insert(field_name, 1u8);
+            names.insert(field_name, Empty {});
 
             if field.name().len() == 0 {
-                let name = format!("unknown {}", index);
+                let name = format!("column {}", index);
                 index += 1;
                 let new_field = <arrow_schema::Field as Clone>::clone(&(*field).clone()).with_name(name);
                 deduplicated_fields.push(Arc::new(new_field));
@@ -138,7 +148,7 @@ fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema::Sch
 
     let list_fields: Vec<_> = deduplicated_fields.into_iter().collect();
 
-    let deduplicated_schema = arrow_schema::Schema::new_with_metadata(list_fields, sc.metadata.clone());
+    let deduplicated_schema = arrow_schema::Schema::new_with_metadata(list_fields, sc.metadata);
 
     Arc::new(deduplicated_schema)
 }
