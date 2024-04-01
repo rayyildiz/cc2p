@@ -1,4 +1,5 @@
 use std::collections::HashMap;
+use std::fs;
 use std::fs::File;
 use std::path::Path;
 use std::sync::Arc;
@@ -65,6 +66,10 @@ pub fn convert_to_parquet(
         .build(file)?;
 
     let target_file = file_path.with_extension("parquet");
+
+    // delete if exist
+    delete_if_exist(target_file.to_str().unwrap())?;
+
     let mut file = File::create(target_file).unwrap();
     let props = WriterProperties::builder()
         .set_compression(Compression::SNAPPY)
@@ -72,7 +77,6 @@ pub fn convert_to_parquet(
         .build();
 
     let mut parquet_writer = parquet::arrow::ArrowWriter::try_new(&mut file, schema_ref, Some(props))?;
-
 
     for batch in csv.by_ref() {
         match batch {
@@ -82,6 +86,24 @@ pub fn convert_to_parquet(
     }
 
     parquet_writer.close()?;
+
+    Ok(())
+}
+
+/// Deletes a file if it exists.
+///
+/// # Arguments
+///
+/// * `filename` - The name of the file to delete.
+///
+/// # Errors
+///
+/// Returns `Err` if there is an error accessing the file or deleting it.
+///
+fn delete_if_exist(filename: &str) -> Result<(), Box<dyn std::error::Error>> {
+    if fs::metadata(filename).is_ok() {
+        fs::remove_file(filename)?;
+    }
 
     Ok(())
 }
@@ -210,7 +232,7 @@ mod tests {
         assert!(parquet_file.exists());
 
         // Optionally, clean up the parquet file
-       // std::fs::remove_file(parquet_file).unwrap();
+        std::fs::remove_file(parquet_file).unwrap();
     }
 
     #[test]
