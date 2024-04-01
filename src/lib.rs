@@ -33,7 +33,7 @@ const READ_MAX_RECORDS: usize = 10;
 /// let base = PathBuf::from("testdata");
 ///     let delimiter = ',';
 ///     let has_header = true;
-///     let file_name = "sample2.csv";
+///     let file_name = "sample.csv";
 ///
 ///     convert_to_parquet(&base, delimiter, has_header, file_name)?;
 ///
@@ -137,14 +137,13 @@ fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema::Sch
 ///
 /// let name = clean_name("Welcome, User 123!");
 /// assert_eq!(name, "Welcome User 123");
-///
 /// ```
 ///
 /// # Returns
 ///
 /// A `String` containing the cleaned string, with all non-alphanumeric characters removed.
 pub fn clean_name(s: &str) -> String {
-    let cleaned = regex::Regex::new(r"[^a-zA-Z0-9\s]").unwrap().replace_all(s, "");
+    let cleaned = regex::Regex::new(r"[^a-zA-Z0-9_\-\s]").unwrap().replace_all(s, "");
 
     cleaned.to_string()
 }
@@ -159,7 +158,7 @@ mod tests {
         let mut base = std::env::current_dir().unwrap();
         base.push("testdata");
 
-        let file_name = "sample.csv";
+        let file_name = "sample2.csv";
 
         let result = convert_to_parquet(&base, ',', true, file_name);
 
@@ -167,11 +166,51 @@ mod tests {
         assert!(result.is_ok());
 
         // Verify the parquet file was created
-        let parquet_file = base.join("sample.parquet");
+        let parquet_file = base.join("sample2.parquet");
         assert!(parquet_file.exists());
 
         // Optionally, clean up the parquet file
         std::fs::remove_file(parquet_file).unwrap();
+    }
+
+    #[test]
+    fn test_convert_to_parquet_delimiter() {
+        let mut base = std::env::current_dir().unwrap();
+        base.push("testdata");
+
+        let file_name = "sample3.csv";
+
+        let result = convert_to_parquet(&base, ';', true, file_name);
+
+        // Check that the function completed successfully
+        assert!(result.is_ok());
+
+        // Verify the parquet file was created
+        let parquet_file = base.join("sample3.parquet");
+        assert!(parquet_file.exists());
+
+        // Optionally, clean up the parquet file
+        std::fs::remove_file(parquet_file).unwrap();
+    }
+
+    #[test]
+    fn test_convert_to_parquet_no_header() {
+        let mut base = std::env::current_dir().unwrap();
+        base.push("testdata");
+
+        let file_name = "sample4.csv";
+
+        let result = convert_to_parquet(&base, ',', false, file_name);
+
+        // Check that the function completed successfully
+        assert!(result.is_ok());
+
+        // Verify the parquet file was created
+        let parquet_file = base.join("sample4.parquet");
+        assert!(parquet_file.exists());
+
+        // Optionally, clean up the parquet file
+       // std::fs::remove_file(parquet_file).unwrap();
     }
 
     #[test]
@@ -192,11 +231,12 @@ mod tests {
         assert_eq!(clean_name("abc"), "abc");
         assert_eq!(clean_name("ab c"), "ab c");
         assert_eq!(clean_name("ab.c"), "abc");
-        assert_eq!(clean_name("ab-_c"), "abc");
+        assert_eq!(clean_name("ab-_c"), "ab-_c");
         assert_eq!(clean_name("Abc"), "Abc");
         assert_eq!(clean_name("a8A"), "a8A");
         assert_eq!(clean_name("a@bc"), "abc");
         assert_eq!(clean_name("abc#"), "abc");
         assert_eq!(clean_name("ab}}[}c"), "abc");
+        assert_eq!(clean_name("ab c "), "ab c ");
     }
 }
