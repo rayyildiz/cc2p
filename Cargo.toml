@@ -1,6 +1,6 @@
 [package]
 name = "cc2p"
-version = "0.2.0"
+version = "0.2.1"
 edition = "2021"
 description = "Convert a CSV to parquet file format"
 authors = ["rayyildiz"]
