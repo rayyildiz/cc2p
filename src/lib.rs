@@ -190,7 +190,7 @@ mod tests {
         let mut base = std::env::current_dir().unwrap();
         base.push("testdata");
 
-        let file_name = "sample2.csv";
+        let file_name = "sample_empty_header.csv";
 
         let result = convert_to_parquet(&base, ',', true, file_name);
 
@@ -198,7 +198,7 @@ mod tests {
         assert!(result.is_ok());
 
         // Verify the parquet file was created
-        let parquet_file = base.join("sample2.parquet");
+        let parquet_file = base.join("sample_empty_header.parquet");
         assert!(parquet_file.exists());
 
         // Optionally, clean up the parquet file
@@ -210,7 +210,7 @@ mod tests {
         let mut base = std::env::current_dir().unwrap();
         base.push("testdata");
 
-        let file_name = "sample3.csv";
+        let file_name = "sample_delimiter.csv";
 
         let result = convert_to_parquet(&base, ';', true, file_name);
 
@@ -218,7 +218,7 @@ mod tests {
         assert!(result.is_ok());
 
         // Verify the parquet file was created
-        let parquet_file = base.join("sample3.parquet");
+        let parquet_file = base.join("sample_delimiter.parquet");
         assert!(parquet_file.exists());
 
         // Optionally, clean up the parquet file
@@ -230,7 +230,7 @@ mod tests {
         let mut base = std::env::current_dir().unwrap();
         base.push("testdata");
 
-        let file_name = "sample4.csv";
+        let file_name = "sample_no_header.csv";
 
         let result = convert_to_parquet(&base, ',', false, file_name);
 
@@ -238,7 +238,7 @@ mod tests {
         assert!(result.is_ok());
 
         // Verify the parquet file was created
-        let parquet_file = base.join("sample4.parquet");
+        let parquet_file = base.join("sample_no_header.parquet");
         assert!(parquet_file.exists());
 
         // Optionally, clean up the parquet file

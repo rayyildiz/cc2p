@@ -7,6 +7,9 @@ authors = ["rayyildiz"]
 license-file = "LICENSE"
 repository = "https://github.com/rayyildiz/cc2p"
 readme = "README.md"
+keywords = ["cli", "ccv", "parquet"]
+rust-version = "1.71.0"
+categories = ["parsing", "text-processing"]
 
 [dependencies]
 arrow-csv = { version = "51" }
