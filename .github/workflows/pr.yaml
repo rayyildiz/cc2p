@@ -18,7 +18,7 @@ jobs:
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: "1.66"
+          toolchain: "1.70.0"  #MSRV
 
       - run: cargo test
 
