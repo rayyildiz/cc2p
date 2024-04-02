@@ -8,7 +8,7 @@ license-file = "LICENSE"
 repository = "https://github.com/rayyildiz/cc2p"
 readme = "README.md"
 keywords = ["cli", "ccv", "parquet"]
-rust-version = "1.70.0"
+rust-version = "1.74.0"
 categories = ["parsing", "text-processing", "command-line-interface"]
 
 [dependencies]

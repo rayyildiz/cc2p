@@ -125,7 +125,7 @@ fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema::Sch
     let mut names = HashMap::new();
     for field in sc.fields() {
         let field_name = field.name().as_str();
-        let field_name = clean_name(field_name);
+        let field_name = clean_column_name(field_name);
 
         if names.contains_key(&field_name) {
             let name = format!("{} {}", field_name, index);
@@ -164,17 +164,17 @@ fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema::Sch
 /// ```rust
 /// use cc2p::*;
 ///
-/// let name = clean_name("John!Doe");
+/// let name = clean_column_name("John!Doe");
 /// assert_eq!(name, "JohnDoe");
 ///
-/// let name = clean_name("Welcome, User 123!");
+/// let name = clean_column_name("Welcome, User 123!");
 /// assert_eq!(name, "Welcome User 123");
 /// ```
 ///
 /// # Returns
 ///
 /// A `String` containing the cleaned string, with all non-alphanumeric characters removed.
-pub fn clean_name(s: &str) -> String {
+pub fn clean_column_name(s: &str) -> String {
     let cleaned = regex::Regex::new(r"[^a-zA-Z0-9_\-\s]").unwrap().replace_all(s, "");
 
     cleaned.to_string()
@@ -259,16 +259,16 @@ mod tests {
     }
 
     #[test]
-    fn test_clean_names() {
-        assert_eq!(clean_name("abc"), "abc");
-        assert_eq!(clean_name("ab c"), "ab c");
-        assert_eq!(clean_name("ab.c"), "abc");
-        assert_eq!(clean_name("ab-_c"), "ab-_c");
-        assert_eq!(clean_name("Abc"), "Abc");
-        assert_eq!(clean_name("a8A"), "a8A");
-        assert_eq!(clean_name("a@bc"), "abc");
-        assert_eq!(clean_name("abc#"), "abc");
-        assert_eq!(clean_name("ab}}[}c"), "abc");
-        assert_eq!(clean_name("ab c "), "ab c ");
+    fn test_clean_column_names() {
+        assert_eq!(clean_column_name("abc"), "abc");
+        assert_eq!(clean_column_name("ab c"), "ab c");
+        assert_eq!(clean_column_name("ab.c"), "abc");
+        assert_eq!(clean_column_name("ab-_c"), "ab-_c");
+        assert_eq!(clean_column_name("Abc"), "Abc");
+        assert_eq!(clean_column_name("a8A"), "a8A");
+        assert_eq!(clean_column_name("a@bc"), "abc");
+        assert_eq!(clean_column_name("abc#"), "abc");
+        assert_eq!(clean_column_name("ab}}[}c"), "abc");
+        assert_eq!(clean_column_name("ab c "), "ab c ");
     }
 }
