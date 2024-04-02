@@ -10,7 +10,7 @@
 
 ### Prerequisites
 
-- Rust 1.66
+- Rust 1.74
 
 ### Building
 

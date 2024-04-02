@@ -7,5 +7,4 @@ tmp/
 .env
 target/
 .DS_Store
-Cargo.lock
 testdata/*.parquet
