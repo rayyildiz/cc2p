@@ -32,7 +32,7 @@ cc2p --path /path/to/csv/files  --worker 8
 
 Other arguments:
 
-- **path** : folder path for CSV search (default `.` - current folder)
+- **path** :  file path pattern for CSV search (default `*.csv` - current folder)
 - **delimiter** : delimiter char used in CSV files (default: `,`)
 - **no-header** : whether to include the header in the CSV search column (default: `false`)
 - **worker**: Number of worker threads to use for performing the task (default: `4`)
