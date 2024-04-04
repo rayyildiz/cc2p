@@ -27,15 +27,32 @@ cargo install cc2p
 Provide Instructions on how to run the scripts. For example, how to specify the input CSV file and the output Parquet file.
 
 ```shell
-cc2p --path /path/to/csv/files  --worker 8
+cc2p [OPTIONS] /path/to/csv/file.csv
 ```
 
-Other arguments:
+Options:
 
-- **path** :  file path pattern for CSV search (default `*.csv` - current folder)
 - **delimiter** : delimiter char used in CSV files (default: `,`)
 - **no-header** : whether to include the header in the CSV search column (default: `false`)
 - **worker**: Number of worker threads to use for performing the task (default: `4`)
+
+```shell
+> cc2p --help
+
+Convert a CSV to parquet file format
+
+Usage: cc2p [OPTIONS] [PATH]
+
+Arguments:
+  [PATH]  Represents the folder path for CSV search [default: *.csv]
+
+Options:
+  -d, --delimiter <DELIMITER>  Represents the delimiter used in CSV files [default: ,]
+  -n, --no-header              Represents whether to include the header in the CSV search column
+  -w, --worker <WORKER>        Number of worker threads to use for performing the task [default: 4]
+  -h, --help                   Print help
+  -V, --version                Print version
+```
 
 ## Features
 

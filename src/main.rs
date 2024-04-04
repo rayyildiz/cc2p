@@ -13,7 +13,7 @@ use cc2p::{convert_to_parquet, find_files};
 #[command(version, about, long_about = None)]
 struct Args {
     /// Represents the folder path for CSV search.
-    #[arg(short, long, default_value_t = String::from("*.csv"))]
+    #[arg(default_value_t = String::from("*.csv"))]
     path: String,
 
     /// Represents the delimiter used in CSV files.
