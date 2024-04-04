@@ -25,7 +25,7 @@ struct Args {
     no_header: bool,
 
     /// Number of worker threads to use for performing the task.
-    #[arg(short, long, default_value_t = 4)]
+    #[arg(short, long, default_value_t = 1)]
     worker: u8,
 }
 

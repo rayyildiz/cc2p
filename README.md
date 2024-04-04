@@ -48,7 +48,7 @@ Arguments:
 
 Options:
   -d, --delimiter <DELIMITER>  Represents the delimiter used in CSV files [default: ,]
-  -n, --no-header              Represents whether to include the header in the CSV search column
+  -n, --no-header              Represents whether to include the header in the CSV search column [default: false]
   -w, --worker <WORKER>        Number of worker threads to use for performing the task [default: 4]
   -h, --help                   Print help
   -V, --version                Print version
