@@ -1,6 +1,5 @@
 extern crate core;
 
-use std::path::PathBuf;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
@@ -8,13 +7,13 @@ use clap::{arg, Parser};
 use indicatif::{ProgressBar, ProgressStyle};
 use tokio::runtime;
 
-use cc2p::convert_to_parquet;
+use cc2p::{convert_to_parquet, find_files};
 
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
     /// Represents the folder path for CSV search.
-    #[arg(short, long, default_value_t = String::from("."))]
+    #[arg(default_value_t = String::from("*.csv"))]
     path: String,
 
     /// Represents the delimiter used in CSV files.
@@ -22,7 +21,7 @@ struct Args {
     delimiter: String,
 
     /// Represents whether to include the header in the CSV search column.
-    #[arg(long, default_value_t = false)]
+    #[arg(short, long, default_value_t = false)]
     no_header: bool,
 
     /// Number of worker threads to use for performing the task.
@@ -39,28 +38,21 @@ struct ErrorData {
 fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let start = Instant::now();
-    let path = PathBuf::from(args.path);
+    let path = args.path.as_str();
     let delimiter = args.delimiter.as_str().chars().next().unwrap_or(',');
     let has_header = !args.no_header;
 
     println!(
         "Program arguments\n path: {}\n delimiter: {}\n has header: {} \n worker count: {}",
-        path.display(),
+        path,
         delimiter,
         has_header,
         args.worker
     );
     let errors = Arc::new(Mutex::new(Vec::<ErrorData>::new()));
 
-    let d = std::fs::read_dir(&path)?;
-    let mut files = vec![];
-    for path_result in d {
-        let path = path_result?.path();
+    let files = find_files(path);
 
-        if path.extension() == Some(std::ffi::OsStr::new("csv")) {
-            files.push(path.file_name().unwrap().to_owned());
-        }
-    }
     let bar = ProgressBar::new(files.len().try_into().unwrap());
 
     bar.set_style(
@@ -80,12 +72,11 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         let mut handles = vec![];
 
         for file in files {
-            let path_clone = path.clone();
             let bar = Arc::clone(&bar);
             let errors_clone = Arc::clone(&errors);
             let h = tokio::spawn(async move {
                 if let Err(err) =
-                    convert_to_parquet(&path_clone, delimiter, has_header, file.to_str().unwrap())
+                    convert_to_parquet(&file, delimiter, has_header)
                 {
                     let mut errors = errors_clone.lock().unwrap();
 
