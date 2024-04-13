@@ -1,11 +1,12 @@
 [package]
 name = "cc2p"
-version = "0.2.2"
+version = "0.2.3"
 edition = "2021"
 description = "Convert a CSV to parquet file format"
 authors = ["rayyildiz"]
 license-file = "LICENSE"
 repository = "https://github.com/rayyildiz/cc2p"
+homepage = "https://rayyildiz.com/projects/cc2p"
 readme = "README.md"
 keywords = ["cli", "csv", "parquet"]
 rust-version = "1.74.0"
