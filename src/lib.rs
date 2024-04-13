@@ -76,7 +76,9 @@ pub fn convert_to_parquet(
     for batch in csv.by_ref() {
         match batch {
             Ok(batch) => parquet_writer.write(&batch)?,
-            Err(_error) => {}
+            Err(_error) => {
+                return Err(Box::new(_error));
+            }
         }
     }
 
