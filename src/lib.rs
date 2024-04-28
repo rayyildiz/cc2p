@@ -97,7 +97,7 @@ pub fn convert_to_parquet(
 ///
 /// Returns `Err` if there is an error accessing the file or deleting it.
 ///
-fn delete_if_exist(filename: &str) -> Result<(), Box<dyn std::error::Error>> {
+pub fn delete_if_exist(filename: &str) -> Result<(), Box<dyn std::error::Error>> {
     if fs::metadata(filename).is_ok() {
         fs::remove_file(filename)?;
     }
@@ -116,7 +116,7 @@ struct Empty {}
 /// # Returns
 ///
 /// Returns an `Arc` containing the deduplicated schema.
-fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema::Schema> {
+pub fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema::Schema> {
     let mut index = 1;
     let mut deduplicated_fields = Vec::new();
     let mut names = HashMap::new();
@@ -207,7 +207,7 @@ pub fn find_files(pattern: &str) -> Vec<PathBuf> {
 ///
 /// # Arguments
 ///
-/// * `s` - The string to be cleaned.
+/// * `column_name` - The string to be cleaned.
 ///
 /// # Examples
 ///
@@ -224,8 +224,8 @@ pub fn find_files(pattern: &str) -> Vec<PathBuf> {
 /// # Returns
 ///
 /// A `String` containing the cleaned string, with all non-alphanumeric characters removed.
-pub fn clean_column_name(s: &str) -> String {
-    let cleaned = regex::Regex::new(r"[^a-zA-Z0-9_\-\s]").unwrap().replace_all(s, "");
+pub fn clean_column_name(column_name: &str) -> String {
+    let cleaned = regex::Regex::new(r"[^a-zA-Z0-9_\-\s]").unwrap().replace_all(column_name, "");
 
     cleaned.to_string()
 }

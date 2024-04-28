@@ -27,5 +27,5 @@ codegen-units = 1
 lto = true
 panic = "abort"
 debug = false
-strip = "debuginfo"
+strip = true
 opt-level = 3
