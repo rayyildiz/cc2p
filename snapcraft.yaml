@@ -1,0 +1,21 @@
+name: cc2p
+base: core22
+version: '0.2.4'
+summary: CC2P is a tool for efficient conversion of CSV files to parquet format.
+description: |
+  (CC2P) is a Rust-based project that converts CSV files in a selected
+  folder into parquet format. This tool provides a simple and efficient
+  way of handling and converting your CSV data files.
+
+
+grade: devel
+confinement: devmode
+
+parts:
+  cc2p:
+    plugin: rust
+    source: .
+
+apps:
+  cc2p:
+    command: bin/cc2p
