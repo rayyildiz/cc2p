@@ -15,11 +15,11 @@ grade: stable
 confinement: strict
 
 parts:
-  cc2p:
+  apps:
     plugin: rust
     source: .
 
 
 apps:
-  cc2p:
+  apps:
     command: bin/cc2p
