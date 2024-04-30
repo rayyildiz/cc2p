@@ -9,3 +9,4 @@ target/
 .DS_Store
 testdata/*.parquet
 *.snap
+cc2p_amd64-*.txt
