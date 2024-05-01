@@ -35,21 +35,23 @@ Options:
 - **delimiter** : delimiter char used in CSV files (default: `,`)
 - **no-header** : whether to include the header in the CSV search column (default: `false`)
 - **worker**: Number of worker threads to use for performing the task (default: `4`)
+- **sampling**: Number of rows to sample for inferring the schema (default: `100`)
 
 ```shell
 > cc2p --help
 
 Convert a CSV to parquet file format
 
-Usage: cc2p [OPTIONS] [PATH]
+Usage: cc2p.exe [OPTIONS] [PATH]
 
 Arguments:
   [PATH]  Represents the folder path for CSV search [default: *.csv]
 
 Options:
   -d, --delimiter <DELIMITER>  Represents the delimiter used in CSV files [default: ,]
-  -n, --no-header              Represents whether to include the header in the CSV search column [default: false]
-  -w, --worker <WORKER>        Number of worker threads to use for performing the task [default: 4]
+  -n, --no-header              Represents whether to include the header in the CSV search column
+  -w, --worker <WORKER>        Number of worker threads to use for performing the task [default: 1]
+  -s, --sampling <SAMPLING>    Number of rows to sample for inferring the schema. [default: 100]
   -h, --help                   Print help
   -V, --version                Print version
 ```

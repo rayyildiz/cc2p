@@ -8,20 +8,18 @@ use parquet::basic::Compression;
 use parquet::file::properties::WriterProperties;
 
 
-/// The maximum number of records that can be read to determine schema.
-const READ_MAX_RECORDS: usize = 10;
-
-/// Convert a CSV file to Parquet format.
+/// Converts a CSV file to Parquet format.
 ///
 /// # Arguments
 ///
-/// * `file_path` - The path to the CSV file.
-/// * `delimiter` - The delimiter used in the CSV file.
+/// * `file_path` - The path of the CSV file to be converted.
+/// * `delimiter` - The delimiter character used in the CSV file.
 /// * `has_header` - Indicates whether the CSV file has a header row.
+/// * `sampling_size` - The number of rows to sample for inferring the schema.
 ///
-/// # Errors
+/// # Returns
 ///
-/// Returns an error if there was a problem reading the file or converting it to Parquet format.
+/// Returns `Ok` if the conversion is successful, otherwise returns an `Err` with a `Box<dyn std::error::Error>`.
 ///
 /// # Example
 ///
@@ -35,22 +33,24 @@ const READ_MAX_RECORDS: usize = 10;
 ///     let delimiter = ',';
 ///     let has_header = true;
 ///
-///     convert_to_parquet(&file_path, delimiter, has_header)?;
+///     convert_to_parquet(&file_path, delimiter, has_header, 10)?;
 ///
 ///     Ok(())
 /// }
 /// ```
+
 pub fn convert_to_parquet(
     file_path: &PathBuf,
     delimiter: char,
     has_header: bool,
+    sampling_size:u8
 ) -> Result<(), Box<dyn std::error::Error>> {
     let file = File::open(file_path)?;
 
     let (csv_schema, _) = arrow_csv::reader::Format::default()
         .with_header(has_header)
         .with_delimiter(delimiter as u8)
-        .infer_schema(file, Some(READ_MAX_RECORDS))?;
+        .infer_schema(file, Some(sampling_size as usize))?;
 
     let schema_ref = remove_deduplicate_columns(csv_schema);
 
@@ -241,7 +241,7 @@ mod tests {
         source_file.push("testdata");
         source_file.push("sample_empty_header.csv");
 
-        let result = convert_to_parquet(&source_file, ',', true);
+        let result = convert_to_parquet(&source_file, ',', true, 10);
 
         // Check that the function completed successfully
         assert!(result.is_ok());
@@ -260,7 +260,7 @@ mod tests {
         source_file.push("testdata");
         source_file.push("sample_delimiter.csv");
 
-        let result = convert_to_parquet(&source_file, ';', true);
+        let result = convert_to_parquet(&source_file, ';', true,10);
 
         // Check that the function completed successfully
         assert!(result.is_ok());
@@ -279,7 +279,7 @@ mod tests {
         source_file.push("testdata");
         source_file.push("sample_no_header.csv");
 
-        let result = convert_to_parquet(&source_file, ',', false);
+        let result = convert_to_parquet(&source_file, ',', false,10);
 
         // Check that the function completed successfully
         assert!(result.is_ok());

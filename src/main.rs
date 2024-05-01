@@ -27,6 +27,10 @@ struct Args {
     /// Number of worker threads to use for performing the task.
     #[arg(short, long, default_value_t = 1)]
     worker: u8,
+
+    /// Number of rows to sample for inferring the schema.
+    #[arg(short, long, default_value_t = 100)]
+    sampling: u8,
 }
 
 // New struct for storing file path and error data
@@ -39,15 +43,17 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let start = Instant::now();
     let path = args.path.as_str();
-    let delimiter = args.delimiter.as_str().chars().next().unwrap_or(',');
+    let sampling_size = args.sampling;
     let has_header = !args.no_header;
+    let delimiter = args.delimiter.as_str().chars().next().unwrap_or(',');
 
     println!(
-        "Program arguments\n path: {}\n delimiter: {}\n has header: {} \n worker count: {}",
+        "Program arguments\n path: {}\n delimiter: {}\n has header: {} \n worker count: {} \n sampling size {}",
         path,
         delimiter,
         has_header,
-        args.worker
+        args.worker,
+        sampling_size
     );
     let errors = Arc::new(Mutex::new(Vec::<ErrorData>::new()));
 
@@ -76,7 +82,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let errors_clone = Arc::clone(&errors);
             let h = tokio::spawn(async move {
                 if let Err(err) =
-                    convert_to_parquet(&file, delimiter, has_header)
+                    convert_to_parquet(&file, delimiter, has_header, sampling_size)
                 {
                     let mut errors = errors_clone.lock().unwrap();
 
