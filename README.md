@@ -2,6 +2,9 @@
 
 [![Build](https://github.com/rayyildiz/cc2p/actions/workflows/build.yaml/badge.svg)](https://github.com/rayyildiz/cc2p/actions/workflows/build.yaml)
 [![Publish](https://github.com/rayyildiz/cc2p/actions/workflows/publish.yaml/badge.svg)](https://github.com/rayyildiz/cc2p/actions/workflows/publish.yaml)
+[![cc2p](https://snapcraft.io/cc2p/badge.svg)](https://snapcraft.io/cc2p)
+
+
 
 **(CC2P)** is a Rust-based project that converts CSV files in a selected folder into parquet format. This tool provides a simple and efficient way of handling and converting your CSV data files.
 
