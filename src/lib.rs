@@ -43,7 +43,7 @@ pub fn convert_to_parquet(
     file_path: &PathBuf,
     delimiter: char,
     has_header: bool,
-    sampling_size:u8
+    sampling_size: u16,
 ) -> Result<(), Box<dyn std::error::Error>> {
     let file = File::open(file_path)?;
 
@@ -260,7 +260,7 @@ mod tests {
         source_file.push("testdata");
         source_file.push("sample_delimiter.csv");
 
-        let result = convert_to_parquet(&source_file, ';', true,10);
+        let result = convert_to_parquet(&source_file, ';', true, 10);
 
         // Check that the function completed successfully
         assert!(result.is_ok());
@@ -279,7 +279,7 @@ mod tests {
         source_file.push("testdata");
         source_file.push("sample_no_header.csv");
 
-        let result = convert_to_parquet(&source_file, ',', false,10);
+        let result = convert_to_parquet(&source_file, ',', false, 10);
 
         // Check that the function completed successfully
         assert!(result.is_ok());

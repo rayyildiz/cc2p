@@ -30,10 +30,10 @@ struct Args {
 
     /// Number of rows to sample for inferring the schema.
     #[arg(short, long, default_value_t = 100)]
-    sampling: u8,
+    sampling: u16,
 }
 
-// New struct for storing file path and error data
+/// The `ErrorData` struct represents data related to an error.
 struct ErrorData {
     file_path: String,
     error: String,
@@ -113,7 +113,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     }
 
     let elapsed = start.elapsed();
-    println!("elapsed time {} ms", elapsed.as_millis());
+    println!("Elapsed time {} ms", elapsed.as_millis());
 
     Ok(())
 }
