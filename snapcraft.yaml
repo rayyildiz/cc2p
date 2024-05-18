@@ -1,6 +1,6 @@
 name: cc2p
 base: core22
-version: '0.2.7'
+version: '0.2.8'
 title: cc2p
 summary: Convert CSV To Parquet
 description: |
@@ -13,6 +13,9 @@ description: |
   - Multithreaded processing with the help of the tokio crate.
   - Progress indication during conversion with the help of the indicatif crate.
 
+website: https://rayyildiz.com/projects/cc2p/
+source-code: https://github.com/rayyildiz/cc2p
+issues: https://github.com/rayyildiz/cc2p/issues/new
 
 architectures:
   - build-on: amd64
@@ -20,13 +23,13 @@ grade: stable
 
 confinement: strict
 parts:
-  apps:
+  cc2p:
     plugin: rust
     source: .
 
-website: https://rayyildiz.com/projects/cc2p/
-source-code: https://github.com/rayyildiz/cc2p
-issues: https://github.com/rayyildiz/cc2p/issues/new
+
+
 apps:
-  apps:
+  cc2p:
     command: bin/cc2p
+
