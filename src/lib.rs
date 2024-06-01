@@ -82,6 +82,7 @@ pub fn convert_to_parquet(
         }
     }
 
+
     parquet_writer.close()?;
 
     Ok(())
@@ -128,7 +129,7 @@ pub fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema:
             e.insert(Empty {});
 
             if field.name().is_empty() {
-                let name = format!("column {}", index);
+                let name = format!("column_{}", index);
                 index += 1;
                 let new_field = <arrow_schema::Field as Clone>::clone(&(*field).clone()).with_name(name);
                 deduplicated_fields.push(Arc::new(new_field));
@@ -136,7 +137,7 @@ pub fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema:
                 deduplicated_fields.push(field.clone());
             }
         } else {
-            let name = format!("{} {}", field_name, index);
+            let name = format!("{}_{}", field_name, index);
             index += 1;
             let new_field = <arrow_schema::Field as Clone>::clone(&(*field).clone()).with_name(name);
             deduplicated_fields.push(Arc::new(new_field));
