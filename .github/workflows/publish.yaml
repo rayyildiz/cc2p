@@ -10,6 +10,8 @@ env:
 
 permissions:
   contents: write
+  id-token: write
+  attestations: write
 
 jobs:
 
@@ -79,6 +81,9 @@ jobs:
             tar -czf "$dirname.tar.gz" "$dirname"
             echo "ASSET=$dirname.tar.gz" >> $GITHUB_ENV
           fi
+      - uses: actions/attest-build-provenance@v1
+        with:
+          subject-path: ${{ env.ASSET }}
 
       - name: Upload the binaries
         uses: softprops/action-gh-release@v2
