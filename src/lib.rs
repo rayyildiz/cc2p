@@ -303,6 +303,10 @@ mod tests {
         let deduplicated_schema = remove_deduplicate_columns(schema);
         dbg!(&deduplicated_schema.fields);
         assert_eq!(deduplicated_schema.fields().len(), 4);
+        assert_eq!(deduplicated_schema.fields.first().unwrap().name(), "name");
+        assert_eq!(deduplicated_schema.fields.get(1).unwrap().name(), "column_1");
+        assert_eq!(deduplicated_schema.fields.get(2).unwrap().name(), "age");
+        assert_eq!(deduplicated_schema.fields.get(3).unwrap().name(), "age_2");
     }
 
     #[test]
