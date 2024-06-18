@@ -16,6 +16,10 @@ struct Args {
     #[arg(default_value_t = String::from("*.csv"))]
     path: String,
 
+    /// Represents the destination folder path for saving the files.
+    #[arg(short, long, default_value_t = String::from("."))]
+    dest: String,
+
     /// Represents the delimiter used in CSV files.
     #[arg(short, long, default_value_t = String::from(","))]
     delimiter: String,
@@ -43,13 +47,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let start = Instant::now();
     let path = args.path.as_str();
+    let destination = args.dest;
     let sampling_size = args.sampling;
     let has_header = !args.no_header;
     let delimiter = args.delimiter.as_str().chars().next().unwrap_or(',');
 
     println!(
-        "Program arguments\n path: {}\n delimiter: {}\n has header: {} \n worker count: {} \n sampling size {}",
+        "Program arguments\n path: {} destination path: {}\n delimiter: {}\n has header: {} \n worker count: {} \n sampling size {}",
         path,
+        destination.as_str(),
         delimiter,
         has_header,
         args.worker,
@@ -74,7 +80,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         .enable_all()
         .build()?;
 
-    runtime.block_on(async {
+    let destination = destination.clone().as_str();
+
+    runtime.block_on(async move {
+        let dest = destination.clone();
         let mut handles = vec![];
 
         for file in files {
@@ -82,7 +91,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let errors_clone = Arc::clone(&errors);
             let h = tokio::spawn(async move {
                 if let Err(err) =
-                    convert_to_parquet(&file, delimiter, has_header, sampling_size)
+                    convert_to_parquet(&file, &dest, delimiter, has_header, sampling_size)
                 {
                     let mut errors = errors_clone.lock().unwrap();
 

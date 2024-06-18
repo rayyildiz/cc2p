@@ -3,6 +3,7 @@ use std::fs;
 use std::fs::File;
 use std::path::{PathBuf};
 use std::sync::Arc;
+use clap::ValueHint::FilePath;
 use glob::{glob_with, MatchOptions};
 use parquet::basic::Compression;
 use parquet::file::properties::WriterProperties;
@@ -30,10 +31,11 @@ use parquet::file::properties::WriterProperties;
 ///     use cc2p::convert_to_parquet;
 ///
 ///     let file_path = PathBuf::from("testdata/sample.csv");
+///     let dest = "testdata";
 ///     let delimiter = ',';
 ///     let has_header = true;
 ///
-///     convert_to_parquet(&file_path, delimiter, has_header, 10)?;
+///     convert_to_parquet(&file_path,dest, delimiter, has_header, 10)?;
 ///
 ///     Ok(())
 /// }
@@ -41,6 +43,7 @@ use parquet::file::properties::WriterProperties;
 
 pub fn convert_to_parquet(
     file_path: &PathBuf,
+    destination: &str,
     delimiter: char,
     has_header: bool,
     sampling_size: u16,
@@ -60,7 +63,17 @@ pub fn convert_to_parquet(
         .with_header(has_header)
         .build(file)?;
 
-    let target_file = file_path.with_extension("parquet");
+    let fila_name = if let Some(f) = file_path.file_stem() {
+        f.to_string_lossy().to_string()
+    } else {
+        "unknown".to_string()
+    };
+
+    let mut target_file = PathBuf::from(destination);
+    target_file.push(fila_name);
+    target_file.push(".parquet");
+
+    let target_file = target_file; // file_path.with_extension("parquet");
 
     // delete if exist
     delete_if_exist(target_file.to_str().unwrap())?;
@@ -241,7 +254,7 @@ mod tests {
         source_file.push("testdata");
         source_file.push("sample_empty_header.csv");
 
-        let result = convert_to_parquet(&source_file, ',', true, 10);
+        let result = convert_to_parquet(&source_file, "testdata", ',', true, 10);
 
         // Check that the function completed successfully
         assert!(result.is_ok());
@@ -260,7 +273,7 @@ mod tests {
         source_file.push("testdata");
         source_file.push("sample_delimiter.csv");
 
-        let result = convert_to_parquet(&source_file, ';', true, 10);
+        let result = convert_to_parquet(&source_file, "testdata", ';', true, 10);
 
         // Check that the function completed successfully
         assert!(result.is_ok());
@@ -279,7 +292,7 @@ mod tests {
         source_file.push("testdata");
         source_file.push("sample_no_header.csv");
 
-        let result = convert_to_parquet(&source_file, ',', false, 10);
+        let result = convert_to_parquet(&source_file, "testdata", ',', false, 10);
 
         // Check that the function completed successfully
         assert!(result.is_ok());
