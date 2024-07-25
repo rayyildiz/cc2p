@@ -13,23 +13,6 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
 
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: dtolnay/rust-toolchain@stable
-        with:
-          toolchain: "1.74.0"  #MSRV
-
-      - run: cargo test
-
-      - run: cargo build
-
-
-  build-latest:
-    name: Build-stable-version
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-
     strategy:
       matrix:
         include:
