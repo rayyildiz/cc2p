@@ -51,7 +51,7 @@ jobs:
         uses: dtolnay/rust-toolchain@stable
         with:
           targets: ${{ matrix.target }}
-          toolchain: "1.74.0" #MSRV
+          toolchain: "1.75.0" #MSRV
 
       - name: Build
         uses: actions-rs/cargo@v1
