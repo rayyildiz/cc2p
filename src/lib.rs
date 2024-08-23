@@ -62,7 +62,7 @@ pub fn convert_to_parquet(
 
     let target_file = file_path.with_extension("parquet");
 
-    // delete if exist
+    // delete it if exist
     delete_if_exist(target_file.to_str().unwrap())?;
 
     let mut file = File::create(target_file).unwrap();
@@ -270,7 +270,7 @@ mod tests {
         assert!(parquet_file.exists());
 
         // Optionally, clean up the parquet file
-        std::fs::remove_file(parquet_file).unwrap();
+        fs::remove_file(parquet_file).unwrap();
     }
 
     #[test]
@@ -289,7 +289,7 @@ mod tests {
         assert!(parquet_file.exists());
 
         // Optionally, clean up the parquet file
-        std::fs::remove_file(parquet_file).unwrap();
+        fs::remove_file(parquet_file).unwrap();
     }
 
     #[test]
