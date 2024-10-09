@@ -9,6 +9,21 @@ use tokio::runtime;
 
 use cc2p::{convert_to_parquet, find_files};
 
+/// A command line parser for processing CSV files with specified parameters.
+///
+/// This struct represents the possible command line arguments that can be supplied
+/// when executing the program. Each field in the struct corresponds to an argument
+/// and can be used to set various options such as the folder path for searching CSV files,
+/// the delimiter used within the CSV files, and the number of worker threads to use.
+///
+/// # Arguments
+///
+/// * `path` - Represents the folder path for CSV search. Default value is "*.csv".
+/// * `delimiter` - Represents the delimiter used in CSV files. Default value is ",".
+/// * `no_header` - Represents whether to include the header in the CSV search column. Default value is `false`.
+/// * `worker` - Number of worker threads to use for performing the task. Default value is 1.
+/// * `sampling` - Number of rows to sample for inferring the schema. Default value is 100.
+///
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
@@ -33,9 +48,31 @@ struct Args {
     sampling: u16,
 }
 
-/// The `ErrorData` struct represents data related to an error.
+/// A structure to hold error information related to CSV file processing.
+///
+/// This struct is designed to capture and store error details that occur during 
+/// the processing of CSV files within the application. It encapsulates the file path 
+/// where the error occurred and the corresponding error message.
+///
+/// # Fields
+///
+/// * `file_path` - The path of the CSV file where the error was encountered.
+/// * `error` - A description of the error that occurred in the given file.
+///
+/// # Example
+///
+/// ```
+/// let error_data = ErrorData {
+///     file_path: String::from("data.csv"),
+///     error: String::from("Failed to open the file."),
+/// };
+/// println!("Error in file {}: {}", error_data.file_path, error_data.error);
+/// ```
 struct ErrorData {
+    /// The path of the CSV file where the error was encountered.
     file_path: String,
+
+    /// A description of the error that occurred in the given file.
     error: String,
 }
 

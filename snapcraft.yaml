@@ -4,14 +4,13 @@ version: '0.2.14'
 title: cc2p
 summary: Convert CSV To Parquet
 description: |
-  CC2P is a Rust-based project that converts CSV files in a selected
-  folder into parquet format. This tool provides a simple and efficient
-  way of handling and converting your CSV data files.
+  **CC2P** is a Rust-based project designed to convert CSV files in a selected folder into Parquet format. This tool offers a simple and efficient way to handle and convert your CSV data files.
+  
+  ## Features
 
-  **Features**
-  - Fast and reliable CSV to Parquet conversion.
-  - Multithreaded processing with the help of the tokio crate.
-  - Progress indication during conversion with the help of the indicatif crate.
+  - **Fast and reliable CSV to Parquet conversion**: Ensures high performance and accuracy in converting CSV files to Parquet format.
+  - **Multithreaded processing**: Utilizes the power of the `tokio` crate to enable concurrent processing, enhancing conversion speed.
+  - **Progress indication**: Tracks and displays conversion progress using the `indicatif` crate, providing real-time feedback on the process.
 
 website: https://rayyildiz.com/projects/cc2p/
 source-code: https://github.com/rayyildiz/cc2p
