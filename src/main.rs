@@ -50,8 +50,8 @@ struct Args {
 
 /// A structure to hold error information related to CSV file processing.
 ///
-/// This struct is designed to capture and store error details that occur during 
-/// the processing of CSV files within the application. It encapsulates the file path 
+/// This struct is designed to capture and store error details that occur during
+/// the processing of CSV files within the application. It encapsulates the file path
 /// where the error occurred and the corresponding error message.
 ///
 /// # Fields
@@ -102,7 +102,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         ProgressStyle::with_template(
             "[{elapsed_precise}] {bar:40.yellow/blue} {pos:>7}/{len:7} {msg}",
         )
-            .unwrap(),
+        .unwrap(),
     );
     let bar = Arc::new(Mutex::new(bar));
 
@@ -118,9 +118,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let bar = Arc::clone(&bar);
             let errors_clone = Arc::clone(&errors);
             let h = tokio::spawn(async move {
-                if let Err(err) =
-                    convert_to_parquet(&file, delimiter, has_header, sampling_size)
-                {
+                if let Err(err) = convert_to_parquet(&file, delimiter, has_header, sampling_size) {
                     let mut errors = errors_clone.lock().unwrap();
 
                     errors.push(ErrorData {
