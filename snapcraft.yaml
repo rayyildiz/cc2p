@@ -1,6 +1,6 @@
 name: cc2p
 base: core22
-version: '0.2.15'
+version: '0.3.0'
 title: cc2p
 summary: Convert CSV To Parquet
 description: |
