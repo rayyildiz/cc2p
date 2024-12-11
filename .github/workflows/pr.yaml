@@ -11,14 +11,14 @@ jobs:
   build:
     name: PR Build Check
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     steps:
       - uses: actions/checkout@v4
 
       - uses: dtolnay/rust-toolchain@stable
         with:
-          toolchain: "1.75.0"  #MSRV
+          toolchain: "1.78.0"  #MSRV
 
       - run: cargo test
 

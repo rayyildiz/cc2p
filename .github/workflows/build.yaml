@@ -11,12 +11,12 @@ jobs:
   build:
     name: Build
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 20
 
     strategy:
       matrix:
         include:
-          - toolchain: 1.75.0
+          - toolchain: 1.78.0
           - toolchain: stable
           - toolchain: beta
           - toolchain: nightly

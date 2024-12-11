@@ -1,6 +1,6 @@
 [package]
 name = "cc2p"
-version = "0.3.0"
+version = "0.3.1"
 edition = "2021"
 description = "Convert a CSV to parquet file format"
 authors = ["rayyildiz"]
@@ -9,7 +9,7 @@ repository = "https://github.com/rayyildiz/cc2p"
 homepage = "https://rayyildiz.com/projects/cc2p"
 readme = "README.md"
 keywords = ["cli", "csv", "parquet"]
-rust-version = "1.75.0"
+rust-version = "1.78.0"
 categories = ["parsing", "text-processing"]
 
 [dependencies]
