@@ -61,8 +61,7 @@ Options:
 ### MacOS Users
 
 **NOTE for macOS Users:** Our Apple signing/notarization is not entirely done yet,
-thus you have to run the following command once to run the application.
-Download the app](https://github.com/rayyildiz/cc2p/releases) and run this command:
+thus you have to run the following command once to run the application. [Download the app](https://github.com/rayyildiz/cc2p/releases) and run this command:
 
 ```shell
 xattr -c cc2p
