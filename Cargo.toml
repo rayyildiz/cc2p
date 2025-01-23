@@ -1,6 +1,6 @@
 [package]
 name = "cc2p"
-version = "0.3.1"
+version = "0.3.2"
 edition = "2021"
 description = "Convert a CSV to parquet file format"
 authors = ["rayyildiz"]
@@ -13,12 +13,12 @@ rust-version = "1.78.0"
 categories = ["parsing", "text-processing"]
 
 [dependencies]
-arrow-csv = { version = "53" }
-arrow-schema = { version = "53" }
-parquet = { version = "53", features = ["arrow-csv", "arrow"] }
+arrow-csv = { version = "54" }
+arrow-schema = { version = "54" }
+parquet = { version = "54", features = ["arrow-csv", "arrow"] }
 clap = { version = "4.5", features = ["derive", "std"] }
 indicatif = { version = "0.17" }
-tokio = { version = "1.42", default-features = false, features = ["rt", "rt-multi-thread"] }
+tokio = { version = "1.43", default-features = false, features = ["rt", "rt-multi-thread"] }
 regex = { version = "1.11" }
 glob = { version = "0.3" }
 
