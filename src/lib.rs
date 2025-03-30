@@ -1,4 +1,4 @@
-use glob::{glob_with, MatchOptions};
+use glob::{MatchOptions, glob_with};
 use parquet::basic::Compression;
 use parquet::file::properties::WriterProperties;
 use std::collections::HashMap;
@@ -70,8 +70,7 @@ pub fn convert_to_parquet(
         .set_created_by("cc2p".to_string())
         .build();
 
-    let mut parquet_writer =
-        parquet::arrow::ArrowWriter::try_new(&mut file, schema_ref, Some(props))?;
+    let mut parquet_writer = parquet::arrow::ArrowWriter::try_new(&mut file, schema_ref, Some(props))?;
 
     for batch in csv.by_ref() {
         match batch {
@@ -130,8 +129,7 @@ pub fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema:
             if field.name().is_empty() {
                 let name = format!("column_{}", index);
                 index += 1;
-                let new_field =
-                    <arrow_schema::Field as Clone>::clone(&(*field).clone()).with_name(name);
+                let new_field = <arrow_schema::Field as Clone>::clone(&(*field).clone()).with_name(name);
                 deduplicated_fields.push(Arc::new(new_field));
             } else {
                 deduplicated_fields.push(field.clone());
@@ -139,8 +137,7 @@ pub fn remove_deduplicate_columns(sc: arrow_schema::Schema) -> Arc<arrow_schema:
         } else {
             let name = format!("{}_{}", field_name, index);
             index += 1;
-            let new_field =
-                <arrow_schema::Field as Clone>::clone(&(*field).clone()).with_name(name);
+            let new_field = <arrow_schema::Field as Clone>::clone(&(*field).clone()).with_name(name);
             deduplicated_fields.push(Arc::new(new_field));
         }
     }
@@ -227,9 +224,7 @@ pub fn find_files(pattern: &str) -> Vec<PathBuf> {
 ///
 /// A `String` containing the cleaned string, with all non-alphanumeric characters removed.
 pub fn clean_column_name(column_name: &str) -> String {
-    let cleaned = regex::Regex::new(r"[^a-zA-Z0-9_\-\s]")
-        .unwrap()
-        .replace_all(column_name, "");
+    let cleaned = regex::Regex::new(r"[^a-zA-Z0-9_\-\s]").unwrap().replace_all(column_name, "");
 
     cleaned.to_string()
 }
@@ -308,10 +303,7 @@ mod tests {
         dbg!(&deduplicated_schema.fields);
         assert_eq!(deduplicated_schema.fields().len(), 4);
         assert_eq!(deduplicated_schema.fields.first().unwrap().name(), "name");
-        assert_eq!(
-            deduplicated_schema.fields.get(1).unwrap().name(),
-            "column_1"
-        );
+        assert_eq!(deduplicated_schema.fields.get(1).unwrap().name(), "column_1");
         assert_eq!(deduplicated_schema.fields.get(2).unwrap().name(), "age");
         assert_eq!(deduplicated_schema.fields.get(3).unwrap().name(), "age_2");
     }

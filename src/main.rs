@@ -3,7 +3,7 @@ extern crate core;
 use std::sync::{Arc, Mutex};
 use std::time::Instant;
 
-use clap::{arg, Parser};
+use clap::{Parser, arg};
 use indicatif::{ProgressBar, ProgressStyle};
 use tokio::runtime;
 
@@ -86,11 +86,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     println!(
         "Program arguments\n path: {}\n delimiter: {}\n has header: {} \n worker count: {} \n sampling size {}",
-        path,
-        delimiter,
-        has_header,
-        args.worker,
-        sampling_size
+        path, delimiter, has_header, args.worker, sampling_size
     );
     let errors = Arc::new(Mutex::new(Vec::<ErrorData>::new()));
 
@@ -98,12 +94,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let bar = ProgressBar::new(files.len().try_into().unwrap());
 
-    bar.set_style(
-        ProgressStyle::with_template(
-            "[{elapsed_precise}] {bar:40.yellow/blue} {pos:>7}/{len:7} {msg}",
-        )
-        .unwrap(),
-    );
+    bar.set_style(ProgressStyle::with_template("[{elapsed_precise}] {bar:40.yellow/blue} {pos:>7}/{len:7} {msg}").unwrap());
     let bar = Arc::new(Mutex::new(bar));
 
     let runtime = runtime::Builder::new_multi_thread()
@@ -141,10 +132,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 
     let errors = errors.lock().unwrap();
     for err_data in &*errors {
-        println!(
-            "File: {}  Error: {:?}\n",
-            err_data.file_path, err_data.error
-        );
+        println!("File: {}  Error: {:?}\n", err_data.file_path, err_data.error);
     }
 
     let elapsed = start.elapsed();
