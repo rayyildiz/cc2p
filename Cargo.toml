@@ -2,7 +2,7 @@ cargo-features = ["edition2024"]
 
 [package]
 name = "cc2p"
-version = "0.3.6"
+version = "0.3.7"
 edition = "2024"
 description = "Convert a CSV to parquet file format"
 authors = ["rayyildiz"]
@@ -15,9 +15,9 @@ rust-version = "1.85.0"
 categories = ["parsing", "text-processing"]
 
 [dependencies]
-arrow-csv = { version = "54" }
-arrow-schema = { version = "54" }
-parquet = { version = "54", features = ["arrow-csv", "arrow"] }
+arrow-csv = { version = "55" }
+arrow-schema = { version = "55" }
+parquet = { version = "55", features = ["arrow-csv", "arrow"] }
 clap = { version = "4.5", features = ["derive", "std"] }
 indicatif = { version = "0.17" }
 tokio = { version = "1", default-features = false, features = ["rt", "rt-multi-thread"] }
