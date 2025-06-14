@@ -1,8 +1,6 @@
-cargo-features = ["edition2024"]
-
 [package]
 name = "cc2p"
-version = "0.3.7"
+version = "0.3.8"
 edition = "2024"
 description = "Convert a CSV to parquet file format"
 authors = ["rayyildiz"]
