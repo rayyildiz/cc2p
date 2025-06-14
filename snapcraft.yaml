@@ -4,20 +4,33 @@ version: '0.3.8'
 title: cc2p
 summary: Convert CSV To Parquet
 description: |
-  **CC2P** is a Rust-based project designed to convert CSV files in a selected folder into Parquet format. This tool offers a simple and efficient way to handle and convert your CSV data files.
+  **CC2P** (Convert CSV To Parquet) is a high-performance command-line tool written in Rust that efficiently converts CSV files to the Apache Parquet format. Parquet is a columnar storage file format that offers efficient data compression and encoding schemes, making it ideal for big data processing.
+
+  ## Why Use CC2P?
+
+  - **Performance**: Leverages Rust's speed and multi-threading for fast conversions
+  - **Memory Efficiency**: Processes files with minimal memory footprint
+  - **Flexibility**: Supports various CSV formats with different delimiters and header options
+  - **Schema Inference**: Automatically detects column types from your data
+  - **Batch Processing**: Convert multiple CSV files in a single command
 
   ## Features
 
-  - **Fast and reliable CSV to Parquet conversion**: Ensures high performance and accuracy in converting CSV files to Parquet format.
-  - **Multithreaded processing**: Utilizes the power of the `tokio` crate to enable concurrent processing, enhancing conversion speed.
-  - **Progress indication**: Tracks and displays conversion progress using the `indicatif` crate, providing real-time feedback on the process.
+  - **Columnar Storage**: Parquet's columnar format provides better compression and faster query performance compared to row-based formats like CSV
+  - **Efficient Compression**: Uses Snappy compression for a good balance between compression ratio and speed
+  - **Schema Handling**: Automatically infers data types and handles duplicate column names
+  - **Parallel Processing**: Multi-threaded conversion using Tokio runtime
+  - **Progress Tracking**: Real-time progress indication with indicatif progress bars
 
 website: https://rayyildiz.com/projects/cc2p/
 source-code: https://github.com/rayyildiz/cc2p
 issues: https://github.com/rayyildiz/cc2p/issues/new
+license: MIT
+contact: https://github.com/rayyildiz/cc2p
 
 architectures:
   - build-on: amd64
+  - build-on: arm64
 grade: stable
 
 confinement: strict
@@ -25,10 +38,17 @@ parts:
   cc2p:
     plugin: rust
     source: .
-
-
+    build-packages:
+      - pkg-config
+      - libssl-dev
 
 apps:
   cc2p:
     command: bin/cc2p
-
+    plugs:
+      - home
+      - removable-media
+      - network
+    environment:
+      RUST_BACKTRACE: "1"
+    common-id: com.github.rayyildiz.cc2p
