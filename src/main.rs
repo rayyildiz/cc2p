@@ -1,11 +1,12 @@
 extern crate core;
 
-use std::sync::{Arc, Mutex};
+use std::sync::Arc;
 use std::time::Instant;
 
 use clap::{Parser, arg};
 use indicatif::{ProgressBar, ProgressStyle};
 use tokio::runtime;
+use tokio::sync::Mutex;
 
 use cc2p::{convert_to_parquet, find_files};
 
@@ -76,7 +77,7 @@ struct ErrorData {
     error: String,
 }
 
-fn main() -> Result<(), Box<dyn std::error::Error>> {
+fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
     let args = Args::parse();
     let start = Instant::now();
     let path = args.path.as_str();
@@ -90,7 +91,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     );
     let errors = Arc::new(Mutex::new(Vec::<ErrorData>::new()));
 
-    let files = find_files(path);
+    let files = find_files(path)?;
 
     let bar = ProgressBar::new(files.len().try_into().unwrap());
 
@@ -109,15 +110,15 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             let bar = Arc::clone(&bar);
             let errors_clone = Arc::clone(&errors);
             let h = tokio::spawn(async move {
-                if let Err(err) = convert_to_parquet(&file, delimiter, has_header, sampling_size) {
-                    let mut errors = errors_clone.lock().unwrap();
+                if let Err(err) = convert_to_parquet(&file, delimiter, has_header, sampling_size).await {
+                    let mut errors = errors_clone.lock().await;
 
                     errors.push(ErrorData {
-                        file_path: file.to_str().unwrap().to_string(),
+                        file_path: file.to_str().unwrap_or("invalid path").to_string(),
                         error: err.to_string(),
                     });
                 }
-                bar.lock().unwrap().inc(1);
+                bar.lock().await.inc(1);
             });
 
             handles.push(h);
@@ -128,10 +129,16 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
         }
     });
 
-    bar.lock().unwrap().finish();
+    // Outside the async block, we need to use a different approach to get the lock
+    let errors_guard = match errors.try_lock() {
+        Ok(guard) => guard,
+        Err(_) => {
+            println!("Warning: Could not acquire lock to display errors");
+            return Ok(());
+        }
+    };
 
-    let errors = errors.lock().unwrap();
-    for err_data in &*errors {
+    for err_data in &*errors_guard {
         println!("File: {}  Error: {:?}\n", err_data.file_path, err_data.error);
     }
 
