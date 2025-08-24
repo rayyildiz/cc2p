@@ -168,7 +168,7 @@ mod tests {
     #[tokio::test]
     async fn test_find_files_with_different_extensions() {
         // Create a temporary file with a non-csv extension
-        let temp_file = "testdata/temp_test_file.txt";
+        let temp_file = "testdata/temp_test_file1.txt";
         fs::write(temp_file, "test content").await.unwrap();
 
         // Test that find_files only returns csv files
