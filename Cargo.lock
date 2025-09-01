@@ -122,9 +122,9 @@ dependencies = [
 
 [[package]]
 name = "arrow-array"
-version = "56.0.0"
+version = "56.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "e2730bc045d62bb2e53ef8395b7d4242f5c8102f41ceac15e8395b9ac3d08461"
+checksum = "744109142cdf8e7b02795e240e20756c2a782ac9180d4992802954a8f871c0de"
 dependencies = [
  "ahash",
  "arrow-buffer",
@@ -138,9 +138,9 @@ dependencies = [
 
 [[package]]
 name = "arrow-buffer"
-version = "56.0.0"
+version = "56.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "54295b93beb702ee9a6f6fbced08ad7f4d76ec1c297952d4b83cf68755421d1d"
+checksum = "601bb103c4c374bcd1f62c66bcea67b42a2ee91a690486c37d4c180236f11ccc"
 dependencies = [
  "bytes",
  "half",
@@ -149,9 +149,9 @@ dependencies = [
 
 [[package]]
 name = "arrow-cast"
-version = "56.0.0"
+version = "56.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "67e8bcb7dc971d779a7280593a1bf0c2743533b8028909073e804552e85e75b5"
+checksum = "eed61d9d73eda8df9e3014843def37af3050b5080a9acbe108f045a316d5a0be"
 dependencies = [
  "arrow-array",
  "arrow-buffer",
@@ -169,9 +169,9 @@ dependencies = [
 
 [[package]]
 name = "arrow-csv"
-version = "56.0.0"
+version = "56.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "673fd2b5fb57a1754fdbfac425efd7cf54c947ac9950c1cce86b14e248f1c458"
+checksum = "fa95b96ce0c06b4d33ac958370db8c0d31e88e54f9d6e08b0353d18374d9f991"
 dependencies = [
  "arrow-array",
  "arrow-cast",
@@ -184,9 +184,9 @@ dependencies = [
 
 [[package]]
 name = "arrow-data"
-version = "56.0.0"
+version = "56.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "97c22fe3da840039c69e9f61f81e78092ea36d57037b4900151f063615a2f6b4"
+checksum = "43407f2c6ba2367f64d85d4603d6fb9c4b92ed79d2ffd21021b37efa96523e12"
 dependencies = [
  "arrow-buffer",
  "arrow-schema",
@@ -196,28 +196,29 @@ dependencies = [
 
 [[package]]
 name = "arrow-ipc"
-version = "56.0.0"
+version = "56.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "778de14c5a69aedb27359e3dd06dd5f9c481d5f6ee9fbae912dba332fd64636b"
+checksum = "e4b0487c4d2ad121cbc42c4db204f1509f8618e589bc77e635e9c40b502e3b90"
 dependencies = [
  "arrow-array",
  "arrow-buffer",
  "arrow-data",
  "arrow-schema",
+ "arrow-select",
  "flatbuffers",
 ]
 
 [[package]]
 name = "arrow-schema"
-version = "56.0.0"
+version = "56.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "85fa1babc4a45fdc64a92175ef51ff00eba5ebbc0007962fecf8022ac1c6ce28"
+checksum = "dfa93af9ff2bb80de539e6eb2c1c8764abd0f4b73ffb0d7c82bf1f9868785e66"
 
 [[package]]
 name = "arrow-select"
-version = "56.0.0"
+version = "56.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d8854d15f1cf5005b4b358abeb60adea17091ff5bdd094dca5d3f73787d81170"
+checksum = "be8b2e0052cd20d36d64f32640b68a5ab54d805d24a473baee5d52017c85536c"
 dependencies = [
  "ahash",
  "arrow-array",
@@ -310,10 +311,11 @@ checksum = "d71b6127be86fdcfddb610f7182ac57211d4b18a3e9c82eb2d17662f2227ad6a"
 
 [[package]]
 name = "cc"
-version = "1.2.34"
+version = "1.2.35"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "42bc4aea80032b7bf409b0bc7ccad88853858911b7713a8062fdc0623867bedc"
+checksum = "590f9024a68a8c40351881787f1934dc11afd69090f5edb6831464694d836ea3"
 dependencies = [
+ "find-msvc-tools",
  "jobserver",
  "libc",
  "shlex",
@@ -321,7 +323,7 @@ dependencies = [
 
 [[package]]
 name = "cc2p"
-version = "0.4.3"
+version = "0.4.4"
 dependencies = [
  "arrow-csv",
  "arrow-schema",
@@ -355,9 +357,9 @@ dependencies = [
 
 [[package]]
 name = "clap"
-version = "4.5.45"
+version = "4.5.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "1fc0e74a703892159f5ae7d3aac52c8e6c392f5ae5f359c70b5881d60aaac318"
+checksum = "2c5e4fcf9c21d2e544ca1ee9d8552de13019a42aa7dbf32747fa7aaf1df76e57"
 dependencies = [
  "clap_builder",
  "clap_derive",
@@ -365,9 +367,9 @@ dependencies = [
 
 [[package]]
 name = "clap_builder"
-version = "4.5.44"
+version = "4.5.46"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "b3e7f4214277f3c7aa526a59dd3fbe306a370daee1f8b7b8c987069cd8e888a8"
+checksum = "fecb53a0e6fcfb055f686001bc2e2592fa527efaf38dbe81a6a9563562e57d41"
 dependencies = [
  "anstream",
  "anstyle",
@@ -481,6 +483,12 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "34aa73646ffb006b8f5147f3dc182bd4bcb190227ce861fc4a4844bf8e3cb2c0"
 
 [[package]]
+name = "find-msvc-tools"
+version = "0.1.0"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "e178e4fba8a2726903f6ba98a6d221e76f9c12c650d5dc0e6afdc50677b49650"
+
+[[package]]
 name = "flatbuffers"
 version = "25.2.10"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -521,7 +529,7 @@ dependencies = [
  "cfg-if",
  "libc",
  "r-efi",
- "wasi 0.14.2+wasi-0.2.4",
+ "wasi 0.14.3+wasi-0.2.4",
 ]
 
 [[package]]
@@ -877,9 +885,9 @@ dependencies = [
 
 [[package]]
 name = "parquet"
-version = "56.0.0"
+version = "56.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "c7288a07ed5d25939a90f9cb1ca5afa6855faa08ec7700613511ae64bdb0620c"
+checksum = "89b56b41d1bd36aae415e42f91cae70ee75cf6cba74416b14dce3e958d5990ec"
 dependencies = [
  "ahash",
  "arrow-array",
@@ -1203,11 +1211,11 @@ checksum = "ccf3ec651a847eb01de73ccad15eb7d99f80485de043efb2f370cd654f4ea44b"
 
 [[package]]
 name = "wasi"
-version = "0.14.2+wasi-0.2.4"
+version = "0.14.3+wasi-0.2.4"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9683f9a5a998d873c0d21fcbe3c083009670149a8fab228644b8bd36b2c48cb3"
+checksum = "6a51ae83037bdd272a9e28ce236db8c07016dd0d50c27038b3f407533c030c95"
 dependencies = [
- "wit-bindgen-rt",
+ "wit-bindgen",
 ]
 
 [[package]]
@@ -1485,13 +1493,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "271414315aff87387382ec3d271b52d7ae78726f5d44ac98b4f4030c91880486"
 
 [[package]]
-name = "wit-bindgen-rt"
-version = "0.39.0"
+name = "wit-bindgen"
+version = "0.45.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "6f42320e61fe2cfd34354ecb597f86f413484a798ba44a8ca1165c58d42da6c1"
-dependencies = [
- "bitflags",
-]
+checksum = "052283831dbae3d879dc7f51f3d92703a316ca49f91540417d38591826127814"
 
 [[package]]
 name = "zerocopy"
