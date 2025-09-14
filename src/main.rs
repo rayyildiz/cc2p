@@ -44,8 +44,8 @@ struct Args {
     #[arg(short, long, default_value_t = 1)]
     worker: u8,
 
-    /// Number of rows to sample for inferring the schema.
-    #[arg(short, long, default_value_t = 100)]
+    /// Number of rows to sample for inferring the schema. The default value is 2048.
+    #[arg(short, long, default_value_t = 2048, help = "Number of rows to sample for inferring the schema. Default value is 2048.")]
     sampling: u16,
 }
 

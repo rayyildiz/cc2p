@@ -83,9 +83,9 @@ cc2p --worker 4 large_data.csv
 ### Options
 
 - **-d, --delimiter** : Delimiter character used in CSV files (default: `,`)
-- **-n, --no-header** : Whether to include the header in the CSV search column (default: `false`)
-- **-w, --worker** : Number of worker threads to use for performing the task (default: `1`)
-- **-s, --sampling** : Number of rows to sample for inferring the schema (default: `100`)
+- **-n, --no-header**: Whether to include the header in the CSV search column (default: `false`)
+- **-w, --worker**: Number of worker threads to use for performing the task (default: `1`)
+- **-s, --sampling**: Number of rows to sample for inferring the schema (default: `2048`)
 
 ```shell
 $ cc2p --help
@@ -120,7 +120,7 @@ Options:
 ### Performance Benefits
 
 - **Reduced Storage**: Parquet files are typically much smaller than equivalent CSV files
-- **Faster Analytics**: Columnar format allows for more efficient querying in data analysis tools
+- **Faster Analytics**: A columnar format allows for more efficient querying in data analysis tools
 - **Schema Enforcement**: Parquet maintains schema information, unlike CSV which is schema-less
 - **Selective Column Reading**: Analytics tools can read only the columns they need, improving performance
 
