@@ -14,38 +14,38 @@ use cc2p::{convert_to_parquet, find_files};
 ///
 /// This struct represents the possible command line arguments that can be supplied
 /// when executing the program. Each field in the struct corresponds to an argument
-/// and can be used to set various options such as the folder path for searching CSV files,
+/// and can be used to set various options, such as the folder path for searching CSV files,
 /// the delimiter used within the CSV files, and the number of worker threads to use.
 ///
 /// # Arguments
 ///
 /// * `path` - Represents the folder path for CSV search. Default value is "*.csv".
-/// * `delimiter` - Represents the delimiter used in CSV files. Default value is ",".
-/// * `no_header` - Represents whether to include the header in the CSV search column. Default value is `false`.
+/// * `delimiter` - Represents the delimiter used in CSV files. The default value is ",".
+/// * `no_header` - Represents whether to include the header in the CSV search column. The default value is `false`.
 /// * `worker` - Number of worker threads to use for performing the task. Default value is 1.
-/// * `sampling` - Number of rows to sample for inferring the schema. Default value is 100.
+/// * `sampling` - Number of rows to sample for inferring the schema. The default value is 2048.
 ///
 #[derive(Parser, Debug)]
 #[command(version, about, long_about = None)]
 struct Args {
     /// Represents the folder path for CSV search.
-    #[arg(default_value_t = String::from("*.csv"))]
+    #[arg(default_value_t = String::from("*.csv"), help = "Represents the folder path for CSV search.")]
     path: String,
 
     /// Represents the delimiter used in CSV files.
-    #[arg(short, long, default_value_t = String::from(","))]
+    #[arg(short, long, default_value_t = String::from(","), help = "Represents the delimiter used in CSV files.")]
     delimiter: String,
 
     /// Represents whether to include the header in the CSV search column.
-    #[arg(short, long, default_value_t = false)]
+    #[arg(short, long, default_value_t = false, help = "Indicates whether to include the header in the CSV search column.")]
     no_header: bool,
 
     /// Number of worker threads to use for performing the task.
-    #[arg(short, long, default_value_t = 1)]
+    #[arg(short, long, default_value_t = 1, help = "Number of worker threads to use for performing the task.")]
     worker: u8,
 
     /// Number of rows to sample for inferring the schema. The default value is 2048.
-    #[arg(short, long, default_value_t = 2048, help = "Number of rows to sample for inferring the schema. Default value is 2048.")]
+    #[arg(short, long, default_value_t = 2048, help = "Number of rows to sample for inferring the schema.")]
     sampling: u16,
 }
 

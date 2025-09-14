@@ -23,6 +23,9 @@ static COLUMN_NAME_REGEX: Lazy<Regex> = Lazy::new(|| Regex::new(r"[^a-zA-Z0-9_\-
 ///
 /// let name = clean_column_name("Welcome, User 123!");
 /// assert_eq!(name, "Welcome User 123");
+///
+/// let name = clean_column_name("John_Doe.");
+/// assert_eq!(name, "John_Doe");
 /// ```
 ///
 /// # Returns
