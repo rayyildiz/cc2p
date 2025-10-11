@@ -16,7 +16,7 @@ jobs:
     strategy:
       matrix:
         include:
-          - toolchain: 1.85.0
+          - toolchain: 1.86.0
           - toolchain: stable
           - toolchain: beta
           - toolchain: nightly

@@ -9,7 +9,7 @@ repository = "https://github.com/rayyildiz/cc2p"
 homepage = "https://rayyildiz.com/projects/cc2p"
 readme = "README.md"
 keywords = ["cli", "csv", "parquet"]
-rust-version = "1.85.0"
+rust-version = "1.86.0"
 categories = ["parsing", "text-processing"]
 
 [dependencies]
