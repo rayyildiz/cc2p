@@ -12,3 +12,5 @@ testdata/*.parquet
 cc2p_amd64-*.txt
 tarpaulin-report.html
 snap/
+.output*.txt
+output*.txt

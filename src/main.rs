@@ -37,11 +37,21 @@ struct Args {
     delimiter: String,
 
     /// Represents whether to include the header in the CSV search column.
-    #[arg(short, long, default_value_t = false, help = "Indicates whether to include the header in the CSV search column.")]
+    #[arg(
+        short,
+        long,
+        default_value_t = false,
+        help = "Indicates whether to include the header in the CSV search column."
+    )]
     no_header: bool,
 
     /// Number of worker threads to use for performing the task.
-    #[arg(short, long, default_value_t = 1, help = "Number of worker threads to use for performing the task.")]
+    #[arg(
+        short,
+        long,
+        default_value_t = 1,
+        help = "Number of worker threads to use for performing the task."
+    )]
     worker: u8,
 
     /// Number of rows to sample for inferring the schema. The default value is 2048.

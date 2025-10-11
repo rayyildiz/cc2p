@@ -82,55 +82,65 @@ pub fn remove_deduplicate_columns(sc: Schema) -> Arc<Schema> {
 /// }
 /// ```
 pub async fn convert_to_parquet(file_path: &PathBuf, delimiter: char, has_header: bool, sampling_size: u16) -> Result<()> {
-    // We need to use std::fs for the CSV reader since arrow-csv doesn't support async I/O
-    let file = std::fs::File::open(file_path).map_err(|e| Cc2pError::FileError(e))?;
-
-    let (csv_schema, _) = arrow_csv::reader::Format::default()
-        .with_header(has_header)
-        .with_delimiter(delimiter as u8)
-        .infer_schema(file, Some(sampling_size as usize))
-        .map_err(|e| Cc2pError::SchemaError(e.to_string()))?;
-
-    let schema_ref = remove_deduplicate_columns(csv_schema);
-
-    // Reopen the file for reading the actual data
-    let file = std::fs::File::open(file_path).map_err(|e| Cc2pError::FileError(e))?;
-
-    let mut csv = arrow_csv::ReaderBuilder::new(schema_ref.clone())
-        .with_delimiter(delimiter as u8)
-        .with_header(has_header)
-        .build(file)
-        .map_err(|e| Cc2pError::CsvError(e.to_string()))?;
-
+    // Compute target path and delete if exists using async FS to avoid blocking
     let target_file = file_path.with_extension("parquet");
     let target_path = target_file
         .to_str()
         .ok_or_else(|| Cc2pError::Other("Failed to convert path to string".to_string()))?;
 
-    // Delete target file if it exists
+    // Delete target file if it exists (async I/O)
     delete_if_exist(target_path).await?;
 
-    // Create the target file
-    let file = std::fs::File::create(target_file).map_err(|e| Cc2pError::FileError(e))?;
+    // Offload blocking Arrow/Parquet work to a dedicated blocking thread
+    let file_path = file_path.clone();
+    let delimiter_u8 = delimiter as u8;
+    tokio::task::spawn_blocking(move || -> Result<()> {
+        // Open file for schema inference
+        let file = std::fs::File::open(&file_path).map_err(Cc2pError::FileError)?;
 
-    let props = WriterProperties::builder()
-        .set_compression(Compression::SNAPPY)
-        .set_created_by("cc2p".to_string())
-        .build();
+        let (csv_schema, _) = arrow_csv::reader::Format::default()
+            .with_header(has_header)
+            .with_delimiter(delimiter_u8)
+            .infer_schema(file, Some(sampling_size as usize))
+            .map_err(|e| Cc2pError::SchemaError(e.to_string()))?;
 
-    let mut parquet_writer =
-        parquet::arrow::ArrowWriter::try_new(file, schema_ref, Some(props)).map_err(|e| Cc2pError::ParquetError(e.to_string()))?;
+        let schema_ref = remove_deduplicate_columns(csv_schema);
 
-    // Process batches
-    for batch in csv.by_ref() {
-        match batch {
-            Ok(batch) => parquet_writer.write(&batch).map_err(|e| Cc2pError::ParquetError(e.to_string()))?,
-            Err(e) => return Err(Cc2pError::CsvError(e.to_string())),
+        // Reopen the file for reading the actual data
+        let file = std::fs::File::open(&file_path).map_err(Cc2pError::FileError)?;
+
+        let mut csv = arrow_csv::ReaderBuilder::new(schema_ref.clone())
+            .with_delimiter(delimiter_u8)
+            .with_header(has_header)
+            .build(file)
+            .map_err(|e| Cc2pError::CsvError(e.to_string()))?;
+
+        // Create the target file
+        let file = std::fs::File::create(&target_file).map_err(Cc2pError::FileError)?;
+
+        let props = WriterProperties::builder()
+            .set_compression(Compression::SNAPPY)
+            .set_created_by("cc2p".to_string())
+            .build();
+
+        let mut parquet_writer =
+            parquet::arrow::ArrowWriter::try_new(file, schema_ref, Some(props)).map_err(|e| Cc2pError::ParquetError(e.to_string()))?;
+
+        // Process batches
+        for batch in csv.by_ref() {
+            match batch {
+                Ok(batch) => parquet_writer.write(&batch).map_err(|e| Cc2pError::ParquetError(e.to_string()))?,
+                Err(e) => return Err(Cc2pError::CsvError(e.to_string())),
+            }
         }
-    }
 
-    // Close the writer
-    parquet_writer.close().map_err(|e| Cc2pError::ParquetError(e.to_string()))?;
+        // Close the writer
+        parquet_writer.close().map_err(|e| Cc2pError::ParquetError(e.to_string()))?;
+
+        Ok(())
+    })
+    .await
+    .map_err(|e| Cc2pError::Other(format!("Blocking task join error: {}", e)))??;
 
     Ok(())
 }
