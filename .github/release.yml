@@ -1,0 +1,32 @@
+changelog:
+  exclude:
+    labels:
+      - ignore-for-release
+      - "status: won't do/fix"
+      - wontfix
+      - invalid
+  categories:
+    - title: Breaking Changes 🛠
+      labels:
+        - Semver-Major
+        - breaking-change
+        - "type: epic"
+        - "priority: high"
+    - title: Exciting New Features 🎉
+      labels:
+        - Semver-Minor
+        - enhancement
+        - "type: feature request"
+        - "priority: medium"
+        - "priority: low"
+        - "good first issue"
+        - enhancement
+        - dependencies
+        - documentation
+    - title: Bug
+      labels:
+        - "type: bug"
+        - bug
+    - title: Other Changes
+      labels:
+        - "*"
