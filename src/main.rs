@@ -3,7 +3,7 @@ extern crate core;
 use std::sync::Arc;
 use std::time::Instant;
 
-use clap::{Parser, arg};
+use clap::Parser;
 use indicatif::{ProgressBar, ProgressStyle};
 use tokio::runtime;
 use tokio::sync::Mutex;

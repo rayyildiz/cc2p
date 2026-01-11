@@ -13,3 +13,4 @@ tarpaulin-report.html
 snap/
 .output*.txt
 output*.txt
+flamegraph.svg

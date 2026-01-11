@@ -1,0 +1,42 @@
+infrastructure:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'compose.yaml'
+          - 'Containerfile'
+          - 'Containerfile.*'
+          - 'Dockerfile'
+          - 'Dockerfile.*'
+          - '.github/**/*'
+          - '.gitignore'
+          - '.editorconfig'
+          - '.gitattributes'
+
+dependency:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'Cargo.toml'
+          - 'Cargo.lock'
+
+documentation:
+  - changed-files:
+      - any-glob-to-any-file:
+          - 'docs/**'
+          - '**/*.md'
+          - '.assistants/**/*.md'
+
+source:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.java'
+          - '**/*.kt'
+          - '**/*.go'
+          - '**/*.rs'
+          - '**/*.py'
+
+rust:
+  - changed-files:
+      - any-glob-to-any-file:
+          - '**/*.rs'
+
+feature:
+  - head-branch: [ '^feature', 'feature' ]

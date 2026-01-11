@@ -4,7 +4,7 @@ use arrow_schema::Schema;
 use parquet::basic::Compression;
 use parquet::file::properties::WriterProperties;
 use std::collections::HashMap;
-use std::path::PathBuf;
+use std::path::Path;
 use std::sync::Arc;
 
 struct Empty {}
@@ -81,21 +81,21 @@ pub fn remove_deduplicate_columns(sc: Schema) -> Arc<Schema> {
 ///     Ok(())
 /// }
 /// ```
-pub async fn convert_to_parquet(file_path: &PathBuf, delimiter: char, has_header: bool, sampling_size: u16) -> Result<()> {
-    // Compute target path and delete if exists using async FS to avoid blocking
+pub async fn convert_to_parquet(file_path: &Path, delimiter: char, has_header: bool, sampling_size: u16) -> Result<()> {
+    // Compute the target path and delete if exists using async FS to avoid blocking
     let target_file = file_path.with_extension("parquet");
     let target_path = target_file
         .to_str()
         .ok_or_else(|| Cc2pError::Other("Failed to convert path to string".to_string()))?;
 
-    // Delete target file if it exists (async I/O)
+    // Delete a target file if it exists (async I/O)
     delete_if_exist(target_path).await?;
 
     // Offload blocking Arrow/Parquet work to a dedicated blocking thread
-    let file_path = file_path.clone();
+    let file_path = file_path.to_path_buf();
     let delimiter_u8 = delimiter as u8;
     tokio::task::spawn_blocking(move || -> Result<()> {
-        // Open file for schema inference
+        // Open a file for schema inference
         let file = std::fs::File::open(&file_path).map_err(Cc2pError::FileError)?;
 
         let (csv_schema, _) = arrow_csv::reader::Format::default()
@@ -151,6 +151,7 @@ mod tests {
     use arrow_schema::DataType;
     use arrow_schema::Field;
     use std::fs;
+    use std::path::PathBuf;
 
     #[tokio::test]
     async fn test_convert_to_parquet() {

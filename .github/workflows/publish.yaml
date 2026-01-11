@@ -41,7 +41,7 @@ jobs:
 
     steps:
       - name: Clone repository
-        uses: actions/checkout@v5
+        uses: actions/checkout@v6
 
       - name: Get the release version from the tag
         shell: bash
@@ -97,7 +97,7 @@ jobs:
     timeout-minutes: 10
 
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@stable
