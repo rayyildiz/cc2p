@@ -158,7 +158,7 @@ If you wish to contribute, please feel free to fork the repository, make your ch
 ### Development Setup
 
 1. Clone the repository
-2. Install Rust (1.85.0 or later)
+2. Install Rust (1.88.0 or later)
 3. Run `cargo build` to build the project
 4. Run `cargo test` to run the tests
 
