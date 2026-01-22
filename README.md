@@ -13,6 +13,7 @@
 - **Flexibility**: Supports various CSV formats with different delimiters and header options
 - **Schema Inference**: Automatically detects column types from your data
 - **Batch Processing**: Convert multiple CSV files in a single command
+- **Interactive Mode**: Browse and selectively export columns using the TUI
 
 ## Installation
 
@@ -86,6 +87,7 @@ cc2p --worker 4 large_data.csv
 - **-n, --no-header**: Whether to include the header in the CSV search column (default: `false`)
 - **-w, --worker**: Number of worker threads to use for performing the task (default: `1`)
 - **-s, --sampling**: Number of rows to sample for inferring the schema (default: `2048`)
+- **-i, --interactive**: Show an interactive UI to browse files and select columns (default: `false`)
 
 ```shell
 $ cc2p --help
@@ -95,13 +97,14 @@ Convert a CSV to parquet file format
 Usage: cc2p [OPTIONS] [PATH]
 
 Arguments:
-  [PATH]  Represents the folder path for CSV search [default: *.csv]
+  [PATH]  Represents the folder path for CSV search. [default: *.csv]
 
 Options:
-  -d, --delimiter <DELIMITER>  Represents the delimiter used in CSV files [default: ,]
-  -n, --no-header              Represents whether to include the header in the CSV search column
-  -w, --worker <WORKER>        Number of worker threads to use for performing the task [default: 1]
-  -s, --sampling <SAMPLING>    Number of rows to sample for inferring the schema. [default: 100]
+  -d, --delimiter <DELIMITER>  Represents the delimiter used in CSV files. [default: ,]
+  -n, --no-header              Indicates whether to include the header in the CSV search column.
+  -w, --worker <WORKER>        Number of worker threads to use for performing the task. [default: 1]
+  -s, --sampling <SAMPLING>    Number of rows to sample for inferring the schema. [default: 2048]
+  -i, --interactive            Show an interactive UI.
   -h, --help                   Print help
   -V, --version                Print version
 ```
@@ -115,6 +118,7 @@ Options:
 - **Schema Handling**: Automatically infers data types and handles duplicate column names
 - **Parallel Processing**: Multi-threaded conversion using [Tokio](https://tokio.rs/) runtime
 - **Progress Tracking**: Real-time progress indication with [indicatif](https://docs.rs/indicatif) progress bars
+- **Interactive TUI**: Browse files, inspect schemas, and select columns for export using a terminal-based UI
 - **Error Handling**: Robust error handling with detailed error messages
 
 ### Performance Benefits
@@ -123,6 +127,25 @@ Options:
 - **Faster Analytics**: A columnar format allows for more efficient querying in data analysis tools
 - **Schema Enforcement**: Parquet maintains schema information, unlike CSV which is schema-less
 - **Selective Column Reading**: Analytics tools can read only the columns they need, improving performance
+
+## Interactive Mode
+
+CC2P includes an interactive Terminal User Interface (TUI) that allows you to browse CSV files in your directory, view their inferred schemas, and selectively export specific columns.
+
+To start the interactive mode:
+```shell
+cc2p -i
+```
+
+### Controls
+
+| Key | Action |
+| --- | --- |
+| `↑`/`↓` | Navigate through files or columns |
+| `Tab` | Switch between File List and Column List panels |
+| `Space` | Select/Unselect the highlighted column |
+| `Enter` | Export the selected columns of the current file to Parquet |
+| `Q` | Quit the application |
 
 ## Platform-Specific Notes
 
