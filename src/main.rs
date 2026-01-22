@@ -8,6 +8,7 @@ use indicatif::{ProgressBar, ProgressStyle};
 use tokio::runtime;
 use tokio::sync::Mutex;
 
+use cc2p::tui::run_tui;
 use cc2p::{convert_to_parquet, find_files};
 
 /// A command line parser for processing CSV files with specified parameters.
@@ -57,6 +58,10 @@ struct Args {
     /// Number of rows to sample for inferring the schema. The default value is 2048.
     #[arg(short, long, default_value_t = 2048, help = "Number of rows to sample for inferring the schema.")]
     sampling: u16,
+
+    /// Show an interactive UI.
+    #[arg(short, long, default_value_t = false, help = "Show an interactive UI.")]
+    interactive: bool,
 }
 
 /// A structure to hold error information related to CSV file processing.
@@ -99,6 +104,17 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         "Program arguments\n path: {}\n delimiter: {}\n has header: {} \n worker count: {} \n sampling size {}",
         path, delimiter, has_header, args.worker, sampling_size
     );
+
+    if args.interactive {
+        let rt = runtime::Builder::new_multi_thread().enable_all().build()?;
+        rt.block_on(async {
+            if let Err(e) = run_tui(path, delimiter, has_header, sampling_size).await {
+                eprintln!("TUI Error: {}", e);
+            }
+        });
+        return Ok(());
+    }
+
     let errors = Arc::new(Mutex::new(Vec::<ErrorData>::new()));
 
     let files = find_files(path)?;
