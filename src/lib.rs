@@ -33,10 +33,13 @@
 
 pub mod conversion;
 pub mod error;
+pub mod tui;
 pub mod utils;
 
 // Re-export commonly used items
 pub use conversion::convert_to_parquet;
+pub use conversion::convert_to_parquet_with_columns;
+pub use conversion::infer_schema;
 pub use conversion::remove_deduplicate_columns;
 pub use utils::clean_column_name;
 pub use utils::find_files;
