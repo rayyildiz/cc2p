@@ -332,7 +332,6 @@ dependencies = [
  "arrow-schema",
  "clap",
  "crossterm",
- "crossterm_winapi",
  "glob",
  "indicatif",
  "once_cell",
@@ -341,7 +340,6 @@ dependencies = [
  "regex",
  "thiserror",
  "tokio",
- "winapi",
 ]
 
 [[package]]
