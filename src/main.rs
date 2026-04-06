@@ -119,9 +119,9 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
 
     let files = find_files(path)?;
 
-    let bar = ProgressBar::new(files.len().try_into().unwrap());
+    let bar = ProgressBar::new(files.len().try_into()?);
 
-    bar.set_style(ProgressStyle::with_template("[{elapsed_precise}] {bar:40.yellow/blue} {pos:>7}/{len:7} {msg}").unwrap());
+    bar.set_style(ProgressStyle::with_template("[{elapsed_precise}] {bar:40.yellow/blue} {pos:>7}/{len:7} {msg}")?);
     let bar = Arc::new(Mutex::new(bar));
 
     let runtime = runtime::Builder::new_multi_thread()
