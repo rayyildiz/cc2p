@@ -335,7 +335,7 @@ dependencies = [
 
 [[package]]
 name = "cc2p"
-version = "0.6.2"
+version = "0.6.3"
 dependencies = [
  "arrow-csv",
  "arrow-schema",
