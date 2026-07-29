@@ -170,7 +170,7 @@ sudo snap install cc2p
 
 ## Technical Requirements
 
-- **Rust Version**: 1.91.0 or later
+- **Rust Version**: 1.95.0 or later
 - **Rust Edition**: 2024
 - **Minimum Memory**: Depends on the size of CSV files being processed
 
