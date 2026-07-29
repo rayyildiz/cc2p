@@ -230,8 +230,8 @@ pub async fn convert_to_parquet_with_columns(
             .set_created_by("cc2p".to_string())
             .build();
 
-        let mut parquet_writer = parquet::arrow::ArrowWriter::try_new(file, projected_schema, Some(props))
-            .map_err(|e| Cc2pError::ParquetError(e.to_string()))?;
+        let mut parquet_writer =
+            parquet::arrow::ArrowWriter::try_new(file, projected_schema, Some(props)).map_err(|e| Cc2pError::ParquetError(e.to_string()))?;
 
         // Process batches
         for batch in csv.by_ref() {

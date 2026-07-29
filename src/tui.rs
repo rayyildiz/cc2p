@@ -4,14 +4,14 @@ use crate::utils::find_files;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyCode, KeyEventKind},
     execute,
-    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    terminal::{EnterAlternateScreen, LeaveAlternateScreen, disable_raw_mode, enable_raw_mode},
 };
 use ratatui::{
+    Frame, Terminal,
     backend::{Backend, CrosstermBackend},
     layout::{Constraint, Direction, Layout},
     style::{Color, Modifier, Style},
     widgets::{Block, Borders, List, ListItem, ListState, Paragraph},
-    Frame, Terminal,
 };
 use std::io;
 use std::path::PathBuf;
@@ -167,15 +167,7 @@ impl App {
             }
 
             self.message = format!("Exporting {}...", file_path.display());
-            match convert_to_parquet_with_columns(
-                file_path,
-                self.delimiter,
-                self.has_header,
-                self.sampling_size,
-                selected_cols,
-            )
-            .await
-            {
+            match convert_to_parquet_with_columns(file_path, self.delimiter, self.has_header, self.sampling_size, selected_cols).await {
                 Ok(_) => {
                     self.message = format!("Successfully exported to {}", file_path.with_extension("parquet").display());
                 }
@@ -218,7 +210,9 @@ pub async fn run_tui(path: &str, delimiter: char, has_header: bool, sampling_siz
 
 async fn run_app<B: Backend>(terminal: &mut Terminal<B>, mut app: App) -> Result<()> {
     loop {
-        terminal.draw(|f| ui(f, &mut app)).map_err(|e| crate::error::Cc2pError::Other(e.to_string()))?;
+        terminal
+            .draw(|f| ui(f, &mut app))
+            .map_err(|e| crate::error::Cc2pError::Other(e.to_string()))?;
 
         if event::poll(std::time::Duration::from_millis(100))? {
             if let Event::Key(key) = event::read()? {
@@ -283,14 +277,15 @@ fn ui(f: &mut Frame, app: &mut App) {
         })
         .collect();
 
-    let file_list_block = Block::default()
-        .borders(Borders::ALL)
-        .title("CSV Files")
-        .border_style(if app.active_panel == ActivePanel::FileList {
-            Style::default().fg(Color::Yellow)
-        } else {
-            Style::default()
-        });
+    let file_list_block =
+        Block::default()
+            .borders(Borders::ALL)
+            .title("CSV Files")
+            .border_style(if app.active_panel == ActivePanel::FileList {
+                Style::default().fg(Color::Yellow)
+            } else {
+                Style::default()
+            });
     let file_list = List::new(files)
         .block(file_list_block)
         .highlight_style(Style::default().add_modifier(Modifier::BOLD).bg(Color::Blue))
@@ -307,14 +302,15 @@ fn ui(f: &mut Frame, app: &mut App) {
         })
         .collect();
 
-    let column_list_block = Block::default()
-        .borders(Borders::ALL)
-        .title("Columns (Name : Type)")
-        .border_style(if app.active_panel == ActivePanel::ColumnList {
-            Style::default().fg(Color::Yellow)
-        } else {
-            Style::default()
-        });
+    let column_list_block =
+        Block::default()
+            .borders(Borders::ALL)
+            .title("Columns (Name : Type)")
+            .border_style(if app.active_panel == ActivePanel::ColumnList {
+                Style::default().fg(Color::Yellow)
+            } else {
+                Style::default()
+            });
     let column_list = List::new(columns)
         .block(column_list_block)
         .highlight_style(Style::default().add_modifier(Modifier::BOLD).bg(Color::Blue))
@@ -322,7 +318,6 @@ fn ui(f: &mut Frame, app: &mut App) {
     f.render_stateful_widget(column_list, main_chunks[1], &mut app.column_list_state);
 
     // Status Message
-    let status_bar = Paragraph::new(app.message.as_str())
-        .block(Block::default().borders(Borders::ALL).title("Status"));
+    let status_bar = Paragraph::new(app.message.as_str()).block(Block::default().borders(Borders::ALL).title("Status"));
     f.render_widget(status_bar, chunks[1]);
 }

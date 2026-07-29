@@ -18,7 +18,6 @@ jobs:
         include:
           - toolchain: 1.95.0
           - toolchain: stable
-          - toolchain: beta
           - toolchain: nightly
 
     steps:
