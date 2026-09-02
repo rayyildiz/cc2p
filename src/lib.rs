@@ -33,6 +33,7 @@
 
 pub mod conversion;
 pub mod error;
+#[cfg(feature = "tui")]
 pub mod tui;
 pub mod utils;
 

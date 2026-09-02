@@ -3,13 +3,13 @@ extern crate core;
 use std::sync::Arc;
 use std::time::Instant;
 
+#[cfg(feature = "tui")]
+use cc2p::tui::run_tui;
+use cc2p::{convert_to_parquet, find_files};
 use clap::Parser;
 use indicatif::{ProgressBar, ProgressStyle};
 use tokio::runtime;
 use tokio::sync::Mutex;
-
-use cc2p::tui::run_tui;
-use cc2p::{convert_to_parquet, find_files};
 
 /// A command line parser for processing CSV files with specified parameters.
 ///
@@ -61,6 +61,7 @@ struct Args {
 
     /// Show an interactive UI.
     #[arg(short, long, default_value_t = false, help = "Show an interactive UI.")]
+    #[cfg(feature = "tui")]
     interactive: bool,
 }
 
@@ -104,7 +105,7 @@ fn main() -> std::result::Result<(), Box<dyn std::error::Error>> {
         "Program arguments\n path: {}\n delimiter: {}\n has header: {} \n worker count: {} \n sampling size {}",
         path, delimiter, has_header, args.worker, sampling_size
     );
-
+    #[cfg(feature = "tui")]
     if args.interactive {
         let rt = runtime::Builder::new_multi_thread().enable_all().build()?;
         rt.block_on(async {
