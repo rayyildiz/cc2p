@@ -13,7 +13,7 @@ rust-version = "1.95.0"
 categories = ["parsing", "text-processing"]
 
 [dependencies]
-arrow-csv = { version = "59" }
+arrow-csv = { version = "60" }
 arrow-schema = { version = "59" }
 parquet = { version = "59", features = ["arrow-csv", "arrow"] }
 clap = { version = "4.5", features = ["derive", "std"] }
